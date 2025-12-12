@@ -1,0 +1,23 @@
+{
+  "lastUpdated": "2025-12-12T12:48:19Z",
+  "summary": {
+    "today": {
+      "total": 0,
+      "fulfilled": 0,
+      "pending": 0,
+      "percentage": 0
+    },
+    "thisWeek": {
+      "total": 0,
+      "fulfilled": 0,
+      "pending": 0,
+      "percentage": 0
+    },
+    "thisMonth": {
+      "total": 2500,
+      "fulfilled": 2500,
+      "pending": 0,
+      "percentage": 100
+    }
+  }
+}
