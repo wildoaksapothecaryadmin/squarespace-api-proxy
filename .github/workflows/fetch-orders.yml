@@ -19,14 +19,21 @@ jobs:
         run: |
           SINCE_DATE="2025-11-01T00:00:00Z"
           BEFORE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          PAGE=1
+          CURSOR=""
+          PAGE_NUM=1
           ALL_ORDERS="[]"
 
           while true; do
-            echo "Fetching page $PAGE..."
+            echo "Fetching page $PAGE_NUM..."
 
-            RESPONSE=$(curl -s -w "\n%{http_code}" \
-              "https://api.squarespace.com/1.0/commerce/orders?createdAfter=$SINCE_DATE&createdBefore=$BEFORE_DATE&page=$PAGE&per_page=50" \
+            # Build URL with cursor if we have one
+            if [ -z "$CURSOR" ]; then
+              URL="https://api.squarespace.com/1.0/commerce/orders?createdAfter=$SINCE_DATE&createdBefore=$BEFORE_DATE"
+            else
+              URL="https://api.squarespace.com/1.0/commerce/orders?createdAfter=$SINCE_DATE&createdBefore=$BEFORE_DATE&cursor=$CURSOR"
+            fi
+
+            RESPONSE=$(curl -s -w "\n%{http_code}" "$URL" \
               -H "Authorization: Bearer ${{ secrets.SQUARESPACE_API_KEY }}" \
               -H "User-Agent: WildOaksAnalytics/1.0")
 
@@ -40,26 +47,37 @@ jobs:
             fi
 
             RESULT_COUNT=$(echo "$BODY" | jq '.result | length')
+            echo "Got $RESULT_COUNT orders on this page"
 
             if [ "$RESULT_COUNT" -eq 0 ]; then
               echo "No more results, stopping pagination"
               break
             fi
 
-            if [ "$PAGE" -eq 1 ]; then
-              ALL_ORDERS="$BODY"
+            # Append results
+            if [ "$ALL_ORDERS" = "[]" ]; then
+              ALL_ORDERS=$(echo "$BODY" | jq '{result: .result}')
             else
-              ALL_ORDERS=$(echo "$ALL_ORDERS" "$BODY" | jq -s '.[0].result + .[1].result | {result: .}')
+              ALL_ORDERS=$(echo "$ALL_ORDERS" "$BODY" | jq -s '{result: (.[0].result + .[1].result)}')
             fi
 
-            PAGE=$((PAGE + 1))
-
-            if [ "$PAGE" -gt 50 ]; then
-              echo "Reached page limit, stopping"
+            # Check for next page cursor
+            HAS_NEXT=$(echo "$BODY" | jq -r '.pagination.hasNextPage // false')
+            if [ "$HAS_NEXT" = "true" ]; then
+              CURSOR=$(echo "$BODY" | jq -r '.pagination.nextPageCursor')
+              echo "Has next page, cursor: ${CURSOR:0:20}..."
+              PAGE_NUM=$((PAGE_NUM + 1))
+              sleep 1
+            else
+              echo "No more pages"
               break
             fi
 
-            sleep 1
+            # Safety limit
+            if [ "$PAGE_NUM" -gt 100 ]; then
+              echo "Reached safety limit of 100 pages"
+              break
+            fi
           done
 
           echo "$ALL_ORDERS" | jq '{
