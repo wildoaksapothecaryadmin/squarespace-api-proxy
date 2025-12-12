@@ -27,13 +27,21 @@
             color: #583521;
         }
 
-        /* Override Squarespace code block styles */
-        .sqs-block-code {
-            background: #000 !important;
+        /* Force black background everywhere - override ALL Squarespace styles */
+        html, body, #page, .sqs-block-code, .code-block, main, section, article, div {
+            background-color: #000 !important;
         }
 
-        body.light-mode .sqs-block-code {
-            background: #e6ddcf !important;
+        body.light-mode html,
+        body.light-mode body,
+        body.light-mode #page,
+        body.light-mode .sqs-block-code,
+        body.light-mode .code-block,
+        body.light-mode main,
+        body.light-mode section,
+        body.light-mode article,
+        body.light-mode div {
+            background-color: #e6ddcf !important;
         }
 
         .container {
@@ -1167,13 +1175,26 @@
             const content = document.getElementById('shippingContent');
 
             try {
+                console.log('Loading shipping data from:', GITHUB_ORDERS_URL);
+
                 // Load pre-calculated summary from GitHub
                 const response = await fetch(GITHUB_ORDERS_URL);
-                const data = await response.json();
 
-                const today = data.summary.today;
-                const week = data.summary.thisWeek;
-                const month = data.summary.thisMonth;
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Loaded summary data:', data);
+
+                // Check if data structure is valid
+                if (!data.summary) {
+                    throw new Error('Invalid data structure - missing summary');
+                }
+
+                const today = data.summary.today || {total: 0, fulfilled: 0, pending: 0, percentage: 0};
+                const week = data.summary.thisWeek || {total: 0, fulfilled: 0, pending: 0, percentage: 0};
+                const month = data.summary.thisMonth || {total: 0, fulfilled: 0, pending: 0, percentage: 0};
 
                 content.innerHTML = `
                     <div class="shipping-container">
@@ -1209,6 +1230,7 @@
                     </div>
                 `;
 
+                console.log('Shipping data displayed successfully');
                 window.shippingDataLoaded = true;
 
                 // Auto-refresh every 15 minutes
@@ -1221,7 +1243,14 @@
 
             } catch (error) {
                 console.error('Error loading shipping data:', error);
-                content.innerHTML = '<div class="loading">Error loading shipping data. Please refresh.</div>';
+                content.innerHTML = `
+                    <div class="loading">
+                        <div style="margin-bottom: 20px;">Error loading shipping data</div>
+                        <div style="font-size: 14px; opacity: 0.7;">${error.message}</div>
+                        <div style="font-size: 14px; opacity: 0.7; margin-top: 10px;">URL: ${GITHUB_ORDERS_URL}</div>
+                        <div style="font-size: 14px; margin-top: 20px;">Open browser console (F12) for details</div>
+                    </div>
+                `;
             }
         }
 
