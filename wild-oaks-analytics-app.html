@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wild Oaks Analytics</title>
+    <link rel="stylesheet" href="https://use.typekit.net/qjo3rmq.css">
+    <style>
+        /* NUCLEAR OPTION: Force black everywhere and take over entire viewport */
+        * {
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        html {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+            background: #000 !important;
+        }
+
+        body {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+            background: #000 !important;
+            font-family: 'cooper-black-std', serif !important;
+            color: #fff !important;
+        }
+
+        /* Kill ALL Squarespace elements */
+        body > *:not(#analytics-app) {
+            display: none !important;
+        }
+
+        /* App container - takes over entire viewport */
+        #analytics-app {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: #000 !important;
+            overflow: hidden !important;
+            z-index: 999999 !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .app-header {
+            flex-shrink: 0;
+            padding: 20px 30px;
+            background: #000;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .pages-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            background: #000;
+        }
+
+        .pages-track {
+            display: flex;
+            height: 100%;
+            will-change: transform;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .pages-track.no-transition {
+            transition: none !important;
+        }
+
+        .page {
+            min-width: 100vw;
+            width: 100vw;
+            height: 100%;
+            flex-shrink: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            background: #000;
+        }
+
+        .page-content {
+            padding: 20px 30px 120px 30px;
+            min-height: 100%;
+            background: #000;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        .nav-arrows {
+            display: none;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .nav-arrows {
+                display: flex;
+            }
+        }
+
+        .nav-arrow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-indicators {
+            display: flex;
+            gap: 10px;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background: #fff;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* Dropdown */
+        .dropdown-container {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .dropdown {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px 20px;
+            border: 3px solid #fff;
+            border-radius: 15px;
+            background: transparent;
+            color: #fff;
+            font-family: 'cooper-black-std', serif;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-width: 300px;
+            background: #000;
+            border: 3px solid #fff;
+            border-radius: 15px;
+            margin-top: 10px;
+            display: none;
+            z-index: 100;
+        }
+
+        .dropdown-options.open {
+            display: block;
+        }
+
+        .dropdown-option {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dropdown-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Data display */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .data-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .data-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .data-column.faded {
+            opacity: 0.7;
+        }
+
+        .data-block {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .data-label {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .data-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        /* Shipping styles */
+        .shipping-block {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .shipping-item {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .shipping-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .shipping-period {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .shipping-status {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 50px;
+            border: 4px solid #fff;
+            border-radius: 80px;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #00ff00;
+            transition: width 0.5s ease-out;
+        }
+
+        .placeholder {
+            text-align: center;
+            padding: 80px 20px;
+            opacity: 0.5;
+            font-size: 24px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="analytics-app">
+        <header class="app-header">
+            <div class="header-title" id="pageTitle">Analytics</div>
+        </header>
+
+        <div class="pages-viewport">
+            <div class="pages-track" id="pagesTrack">
+                <!-- Page 1: Analytics -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="dropdown-container">
+                            <div class="dropdown" id="timeDropdown">
+                                <span id="dropdownText">Select Time</span>
+                                <span id="dropdownArrow">▼</span>
+                            </div>
+                            <div class="dropdown-options" id="dropdownOptions">
+                                <div class="dropdown-option" data-value="today">Today</div>
+                                <div class="dropdown-option" data-value="month">Month</div>
+                                <div class="dropdown-option" data-value="year">Year</div>
+                            </div>
+                        </div>
+                        <div id="analyticsContent"></div>
+                    </div>
+                </div>
+
+                <!-- Page 2: Products -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="placeholder">Products<br>(Coming Soon)</div>
+                    </div>
+                </div>
+
+                <!-- Page 3: Shipping Progress -->
+                <div class="page">
+                    <div class="page-content">
+                        <div id="shippingContent" class="loading">Loading shipping data...</div>
+                    </div>
+                </div>
+
+                <!-- Page 4: Affiliates -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="placeholder">Affiliates<br>Coming Soon</div>
+                    </div>
+                </div>
+
+                <!-- Page 5: Commission -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="placeholder">Commission<br>Coming Soon</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-container">
+            <div class="nav-arrows">
+                <button class="nav-arrow" id="prevBtn">←</button>
+                <button class="nav-arrow" id="nextBtn">→</button>
+            </div>
+            <div class="page-indicators" id="indicators"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1r4mI_fcZCax-PSi3T9eY8TLzqe6OB0sg5kIdmi-Gfbc/export?format=csv';
+        const GITHUB_ORDERS_URL = 'https://raw.githubusercontent.com/wildoaksapothecaryadmin/squarespace-api-proxy/refs/heads/main/orders-summary.json';
+
+        // State
+        const state = {
+            currentPage: 0,
+            totalPages: 5,
+            isTransitioning: false,
+            isDragging: false,
+            touchStartX: 0,
+            touchStartY: 0,
+            touchCurrentX: 0,
+            touchCurrentY: 0
+        };
+
+        const pageNames = ['Analytics', 'Products', 'Shipping Progress', 'Affiliates', 'Commission'];
+        let ordersData = [];
+
+        // Elements
+        const track = document.getElementById('pagesTrack');
+        const indicators = document.getElementById('indicators');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageTitle = document.getElementById('pageTitle');
+
+        // Initialize
+        function init() {
+            createIndicators();
+            setupNavigation();
+            setupTouch();
+            setupDropdown();
+            goToPage(0);
+            loadAnalyticsData();
+            loadShippingData();
+        }
+
+        function createIndicators() {
+            for (let i = 0; i < state.totalPages; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'indicator';
+                dot.dataset.page = i;
+                dot.addEventListener('click', () => goToPage(i));
+                indicators.appendChild(dot);
+            }
+        }
+
+        function setupNavigation() {
+            prevBtn.addEventListener('click', () => goToPage(state.currentPage - 1));
+            nextBtn.addEventListener('click', () => goToPage(state.currentPage + 1));
+        }
+
+        function setupTouch() {
+            const viewport = document.querySelector('.pages-viewport');
+
+            viewport.addEventListener('touchstart', handleTouchStart, { passive: true });
+            viewport.addEventListener('touchmove', handleTouchMove, { passive: false });
+            viewport.addEventListener('touchend', handleTouchEnd, { passive: true });
+            viewport.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+        }
+
+        function handleTouchStart(e) {
+            if (state.isTransitioning) return;
+
+            state.touchStartX = e.touches[0].clientX;
+            state.touchStartY = e.touches[0].clientY;
+            state.isDragging = true;
+
+            track.classList.add('no-transition');
+        }
+
+        function handleTouchMove(e) {
+            if (!state.isDragging || state.isTransitioning) return;
+
+            state.touchCurrentX = e.touches[0].clientX;
+            state.touchCurrentY = e.touches[0].clientY;
+
+            const diffX = state.touchCurrentX - state.touchStartX;
+            const diffY = state.touchCurrentY - state.touchStartY;
+
+            // Only prevent default if horizontal swipe is dominant
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                e.preventDefault();
+
+                const currentOffset = -(state.currentPage * window.innerWidth);
+                const newOffset = currentOffset + diffX;
+
+                track.style.transform = `translateX(${newOffset}px)`;
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!state.isDragging) return;
+
+            state.isDragging = false;
+            track.classList.remove('no-transition');
+
+            const diffX = state.touchCurrentX - state.touchStartX;
+            const diffY = state.touchCurrentY - state.touchStartY;
+
+            // Only handle as page swipe if horizontal movement dominates
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                const threshold = window.innerWidth * 0.25;
+
+                if (Math.abs(diffX) > threshold) {
+                    if (diffX > 0) {
+                        goToPage(state.currentPage - 1);
+                    } else {
+                        goToPage(state.currentPage + 1);
+                    }
+                } else {
+                    goToPage(state.currentPage);
+                }
+            } else {
+                goToPage(state.currentPage);
+            }
+
+            state.touchCurrentX = 0;
+            state.touchCurrentY = 0;
+        }
+
+        function goToPage(pageIndex) {
+            if (pageIndex < 0 || pageIndex >= state.totalPages || state.isTransitioning) {
+                pageIndex = state.currentPage;
+            }
+
+            state.isTransitioning = true;
+            state.currentPage = pageIndex;
+
+            const offset = -(pageIndex * window.innerWidth);
+            track.style.transform = `translateX(${offset}px)`;
+
+            pageTitle.textContent = pageNames[pageIndex];
+            updateIndicators();
+            updateButtons();
+
+            if (pageIndex === 2 && !window.shippingDataLoaded) {
+                loadShippingData();
+            }
+
+            setTimeout(() => {
+                state.isTransitioning = false;
+            }, 300);
+        }
+
+        function updateIndicators() {
+            document.querySelectorAll('.indicator').forEach((dot, index) => {
+                dot.classList.toggle('active', index === state.currentPage);
+            });
+        }
+
+        function updateButtons() {
+            prevBtn.disabled = state.currentPage === 0;
+            nextBtn.disabled = state.currentPage === state.totalPages - 1;
+        }
+
+        // Dropdown
+        function setupDropdown() {
+            const dropdown = document.getElementById('timeDropdown');
+            const dropdownOptions = document.getElementById('dropdownOptions');
+            const dropdownText = document.getElementById('dropdownText');
+            const dropdownArrow = document.getElementById('dropdownArrow');
+
+            dropdown.addEventListener('click', () => {
+                dropdownOptions.classList.toggle('open');
+                dropdownArrow.textContent = dropdownOptions.classList.contains('open') ? '✕' : '▼';
+            });
+
+            document.querySelectorAll('.dropdown-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownText.textContent = option.textContent;
+                    dropdownOptions.classList.remove('open');
+                    dropdownArrow.textContent = '▼';
+                    updateAnalytics(option.dataset.value);
+                });
+            });
+        }
+
+        // Analytics data
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const headers = lines[0].split(',');
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+
+                for (let char of lines[i]) {
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim());
+
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header.trim()] = values[index] || '';
+                });
+                data.push(row);
+            }
+
+            return data;
+        }
+
+        async function loadAnalyticsData() {
+            try {
+                const response = await fetch(SHEET_URL);
+                const text = await response.text();
+                ordersData = parseCSV(text);
+                console.log('Loaded orders:', ordersData.length);
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            if (dateStr.includes('-')) return new Date(dateStr);
+
+            const parts = dateStr.split(' ')[0].split('/');
+            const timeParts = dateStr.split(' ')[1].split(':');
+            return new Date(parts[2], parts[0] - 1, parts[1], timeParts[0], timeParts[1]);
+        }
+
+        function getRevenue(orders, startDate, endDate) {
+            const seen = new Set();
+            let total = 0;
+
+            orders.forEach(order => {
+                const orderDate = parseDate(order['Created at']);
+                if (!orderDate || orderDate < startDate || orderDate > endDate) return;
+
+                const orderNum = order['Order Number'];
+                const totals = order['TOTALS'];
+
+                if (totals && !seen.has(orderNum)) {
+                    seen.add(orderNum);
+                    const amount = parseFloat(totals.replace('$', '').replace(',', ''));
+                    if (!isNaN(amount)) total += amount;
+                }
+            });
+
+            return total;
+        }
+
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function updateAnalytics(selection) {
+            const content = document.getElementById('analyticsContent');
+            const now = new Date();
+
+            if (selection === 'today') {
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const todayEnd = new Date(todayStart.getTime() + 86400000);
+                const yesterdayStart = new Date(todayStart.getTime() - 86400000);
+                const lastMonthSameDay = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                const lastMonthSameDayEnd = new Date(lastMonthSameDay.getTime() + 86400000);
+
+                const todayRev = getRevenue(ordersData, todayStart, todayEnd);
+                const yesterdayRev = getRevenue(ordersData, yesterdayStart, todayStart);
+                const lastMonthRev = getRevenue(ordersData, lastMonthSameDay, lastMonthSameDayEnd);
+
+                content.innerHTML = `
+                    <div class="data-grid">
+                        <div class="data-column">
+                            <div class="data-block">
+                                <div class="data-label">Today</div>
+                                <div class="data-value">${formatCurrency(todayRev)}</div>
+                            </div>
+                            <div class="data-block">
+                                <div class="data-label">Yesterday</div>
+                                <div class="data-value">${formatCurrency(yesterdayRev)}</div>
+                            </div>
+                        </div>
+                        <div class="data-column faded">
+                            <div class="data-block">
+                                <div class="data-label">Last Month</div>
+                                <div class="data-value">${formatCurrency(lastMonthRev)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (selection === 'month') {
+                const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+                const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+
+                const thisMonthRev = getRevenue(ordersData, thisMonthStart, thisMonthEnd);
+                const lastMonthRev = getRevenue(ordersData, lastMonthStart, lastMonthEnd);
+
+                content.innerHTML = `
+                    <div class="data-grid">
+                        <div class="data-column">
+                            <div class="data-block">
+                                <div class="data-label">This Month</div>
+                                <div class="data-value">${formatCurrency(thisMonthRev)}</div>
+                            </div>
+                        </div>
+                        <div class="data-column faded">
+                            <div class="data-block">
+                                <div class="data-label">Last Month</div>
+                                <div class="data-value">${formatCurrency(lastMonthRev)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (selection === 'year') {
+                const thisYearStart = new Date(now.getFullYear(), 0, 1);
+                const thisYearEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+                const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
+                const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59);
+
+                const thisYearRev = getRevenue(ordersData, thisYearStart, thisYearEnd);
+                const lastYearRev = getRevenue(ordersData, lastYearStart, lastYearEnd);
+
+                content.innerHTML = `
+                    <div class="data-grid">
+                        <div class="data-column">
+                            <div class="data-block">
+                                <div class="data-label">This Year</div>
+                                <div class="data-value">${formatCurrency(thisYearRev)}</div>
+                            </div>
+                        </div>
+                        <div class="data-column faded">
+                            <div class="data-block">
+                                <div class="data-label">Last Year</div>
+                                <div class="data-value">${formatCurrency(lastYearRev)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Shipping data
+        window.shippingDataLoaded = false;
+
+        async function loadShippingData() {
+            const content = document.getElementById('shippingContent');
+
+            try {
+                const response = await fetch(GITHUB_ORDERS_URL);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                if (!data.summary) throw new Error('Invalid data');
+
+                const today = data.summary.today || { total: 0, fulfilled: 0, percentage: 0 };
+                const week = data.summary.thisWeek || { total: 0, fulfilled: 0, percentage: 0 };
+                const month = data.summary.thisMonth || { total: 0, fulfilled: 0, percentage: 0 };
+
+                content.innerHTML = `
+                    <div class="shipping-block">
+                        <div class="shipping-item">
+                            <div class="shipping-header">
+                                <div class="shipping-period">Today</div>
+                                <div class="shipping-status">${today.fulfilled}/${today.total} Orders Fulfilled</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${today.percentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="shipping-item">
+                            <div class="shipping-header">
+                                <div class="shipping-period">This Week</div>
+                                <div class="shipping-status">${week.fulfilled}/${week.total} Orders Fulfilled</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${week.percentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="shipping-item">
+                            <div class="shipping-header">
+                                <div class="shipping-period">This Month</div>
+                                <div class="shipping-status">${month.fulfilled}/${month.total} Orders Fulfilled</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${month.percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                window.shippingDataLoaded = true;
+
+                setTimeout(() => {
+                    window.shippingDataLoaded = false;
+                    if (state.currentPage === 2) loadShippingData();
+                }, 15 * 60 * 1000);
+
+            } catch (error) {
+                content.innerHTML = `<div class="loading">Error: ${error.message}</div>`;
+            }
+        }
+
+        window.addEventListener('resize', () => goToPage(state.currentPage));
+
+        init();
+    </script>
+</body>
+</html>
