@@ -1,0 +1,94 @@
+name: Fetch Squarespace Orders
+
+  on:
+    schedule:
+      - cron: '*/15 * * * *'
+    workflow_dispatch:
+
+  jobs:
+    fetch-orders:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Fetch orders from Squarespace API
+          run: |
+            SINCE_DATE="2025-11-01T00:00:00Z"
+            PAGE=1
+            ALL_ORDERS="[]"
+
+            while true; do
+              echo "Fetching page $PAGE..."
+
+              RESPONSE=$(curl -s -w "\n%{http_code}" \
+                "https://api.squarespace.com/1.0/commerce/orders?modifiedAft
+  er=$SINCE_DATE&page=$PAGE&per_page=50" \
+                -H "Authorization: Bearer ${{ secrets.SQUARESPACE_API_KEY 
+  }}" \
+                -H "User-Agent: WildOaksAnalytics/1.0")
+
+              HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+              BODY=$(echo "$RESPONSE" | sed '$d')
+
+              if [ "$HTTP_CODE" != "200" ]; then
+                echo "API request failed with status $HTTP_CODE"
+                echo "$BODY"
+                break
+              fi
+
+              RESULT_COUNT=$(echo "$BODY" | jq '.result | length')
+
+              if [ "$RESULT_COUNT" -eq 0 ]; then
+                echo "No more results, stopping pagination"
+                break
+              fi
+
+              if [ "$PAGE" -eq 1 ]; then
+                ALL_ORDERS="$BODY"
+              else
+                ALL_ORDERS=$(echo "$ALL_ORDERS" "$BODY" | jq -s '.[0].result
+   + .[1].result | {result: .}')
+              fi
+
+              PAGE=$((PAGE + 1))
+
+              if [ "$PAGE" -gt 50 ]; then
+                echo "Reached page limit, stopping"
+                break
+              fi
+
+              sleep 1
+            done
+
+            echo "$ALL_ORDERS" | jq '{
+              lastUpdated: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+              orders: [.result[] | {
+                orderNumber: .orderNumber,
+                createdOn: .createdOn,
+                modifiedOn: .modifiedOn,
+                fulfillmentStatus: .fulfillmentStatus,
+                customerEmail: .customerEmail
+              }]
+            }' > orders.json
+
+            echo "Fetched $(echo "$ALL_ORDERS" | jq '.result | length')
+  orders"
+
+        - name: Commit and push if changed
+          run: |
+            git config --global user.name 'GitHub Actions Bot'
+            git config --global user.email 'actions@github.com'
+            git add orders.json
+
+            if git diff --staged --quiet; then
+              echo "No changes to commit"
+            else
+              git commit -m "Update orders data - $(date -u +'%Y-%m-%d 
+  %H:%M:%S UTC')"
+              git push
+              echo "Changes committed and pushed"
+            fi
