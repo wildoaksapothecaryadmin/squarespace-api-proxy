@@ -1,6 +1,13 @@
 {
-  "lastUpdated": "2025-12-12T23:28:47Z",
+  "lastUpdated": "2025-12-12T23:46:10Z",
   "orders": [
+    {
+      "orderNumber": "15720",
+      "createdOn": "2025-12-01T17:27:15.467Z",
+      "modifiedOn": "2025-12-12T23:35:14.878Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "backpackgirl24@yahoo.com"
+    },
     {
       "orderNumber": "15718",
       "createdOn": "2025-12-01T16:35:13.345Z",
@@ -3430,13 +3437,6 @@
       "modifiedOn": "2025-12-01T18:53:35.382Z",
       "fulfillmentStatus": "CANCELED",
       "customerEmail": "mariahpensz@gmail.com"
-    },
-    {
-      "orderNumber": "15720",
-      "createdOn": "2025-12-01T17:27:15.467Z",
-      "modifiedOn": "2025-12-01T17:27:17.570Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "backpackgirl24@yahoo.com"
     },
     {
       "orderNumber": "15719",
