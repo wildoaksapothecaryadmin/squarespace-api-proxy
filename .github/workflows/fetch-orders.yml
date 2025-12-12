@@ -75,11 +75,69 @@ jobs:
 
           echo "Fetched $(echo "$ALL_ORDERS" | jq '.result | length') orders"
 
+      - name: Calculate summary statistics
+        run: |
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          CURRENT_YEAR=$(date -u +"%Y")
+          CURRENT_MONTH=$(date -u +"%m")
+
+          # Calculate date boundaries
+          TODAY_START=$(date -u +"%Y-%m-%d")T00:00:00Z
+
+          # Week start (Sunday at 00:00:00)
+          WEEK_START=$(date -u -d "last sunday" +"%Y-%m-%d" 2>/dev/null || date -u -v-sunday +"%Y-%m-%d")T00:00:00Z
+
+          # Month start - special case for December 2025
+          if [ "$CURRENT_YEAR" = "2025" ] && [ "$CURRENT_MONTH" = "12" ]; then
+            MONTH_START="2025-11-29T00:00:00Z"
+            echo "Using special December 2025 start date: Nov 29"
+          else
+            MONTH_START=$(date -u +"%Y-%m-01")T00:00:00Z
+          fi
+
+          echo "Date ranges:"
+          echo "  Today: $TODAY_START"
+          echo "  Week: $WEEK_START"
+          echo "  Month: $MONTH_START"
+
+          # Create summary JSON with calculations
+          jq --arg now "$NOW" \
+             --arg today_start "$TODAY_START" \
+             --arg week_start "$WEEK_START" \
+             --arg month_start "$MONTH_START" \
+          '{
+            lastUpdated: $now,
+            summary: {
+              today: {
+                total: [.orders[] | select(.createdOn >= $today_start)] | length,
+                fulfilled: [.orders[] | select(.createdOn >= $today_start and .fulfillmentStatus == "FULFILLED")] | length,
+                pending: [.orders[] | select(.createdOn >= $today_start and .fulfillmentStatus == "PENDING")] | length
+              },
+              thisWeek: {
+                total: [.orders[] | select(.createdOn >= $week_start)] | length,
+                fulfilled: [.orders[] | select(.createdOn >= $week_start and .fulfillmentStatus == "FULFILLED")] | length,
+                pending: [.orders[] | select(.createdOn >= $week_start and .fulfillmentStatus == "PENDING")] | length
+              },
+              thisMonth: {
+                total: [.orders[] | select(.createdOn >= $month_start)] | length,
+                fulfilled: [.orders[] | select(.createdOn >= $month_start and .fulfillmentStatus == "FULFILLED")] | length,
+                pending: [.orders[] | select(.createdOn >= $month_start and .fulfillmentStatus == "PENDING")] | length
+              }
+            }
+          } |
+          .summary.today.percentage = (if .summary.today.total > 0 then ((.summary.today.fulfilled / .summary.today.total) * 100 | round) else 0 end) |
+          .summary.thisWeek.percentage = (if .summary.thisWeek.total > 0 then ((.summary.thisWeek.fulfilled / .summary.thisWeek.total) * 100 | round) else 0 end) |
+          .summary.thisMonth.percentage = (if .summary.thisMonth.total > 0 then ((.summary.thisMonth.fulfilled / .summary.thisMonth.total) * 100 | round) else 0 end)
+          ' orders.json > orders-summary.json
+
+          echo "Summary created:"
+          cat orders-summary.json | jq .
+
       - name: Commit and push if changed
         run: |
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'actions@github.com'
-          git add orders.json
+          git add orders.json orders-summary.json
 
           if git diff --staged --quiet; then
             echo "No changes to commit"
