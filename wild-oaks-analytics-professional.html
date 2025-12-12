@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wild Oaks Analytics</title>
+    <link rel="stylesheet" href="https://use.typekit.net/qjo3rmq.css">
+    <style>
+        /* ========================================
+           WILD OAKS ANALYTICS - PROFESSIONAL APP
+           Color Palette from Brand Guide
+        ======================================== */
+
+        :root {
+            /* Brand Colors */
+            --moss-beige: #9a8f6e;
+            --cinnamon: #583521;
+            --olive: #595137;
+            --tan: #c9ac90;
+            --espresso: #2e1f13;
+            --cream: #e6ddcf;
+
+            /* App Colors */
+            --bg-primary: #605e4b;
+            --bg-secondary: #4b4a3e;
+            --text-primary: #e6ddcf;
+            --text-secondary: rgba(230, 221, 207, 0.7);
+            --accent: #583521;
+            --border: rgba(230, 221, 207, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-primary);
+            font-family: 'cooper-black-std', serif;
+            color: var(--text-primary);
+        }
+
+        /* Force background everywhere */
+        body, body * {
+            background-color: transparent;
+        }
+
+        /* ========================================
+           APP CONTAINER
+        ======================================== */
+
+        #wild-oaks-app {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-primary);
+            overflow: hidden;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========================================
+           HEADER
+        ======================================== */
+
+        .app-header {
+            flex-shrink: 0;
+            padding: 24px 32px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+
+        /* ========================================
+           PAGES VIEWPORT
+        ======================================== */
+
+        .pages-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            background: var(--bg-primary);
+        }
+
+        .pages-track {
+            display: flex;
+            height: 100%;
+            will-change: transform;
+            transition: transform 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .pages-track.no-transition {
+            transition: none;
+        }
+
+        .page {
+            min-width: 100vw;
+            width: 100vw;
+            height: 100%;
+            flex-shrink: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .page-content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 20px;
+            }
+        }
+
+        /* ========================================
+           NAVIGATION
+        ======================================== */
+
+        .nav-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            z-index: 999;
+        }
+
+        .nav-arrows {
+            display: none;
+            gap: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .nav-arrows {
+                display: flex;
+            }
+        }
+
+        .nav-arrow {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-primary);
+            font-size: 18px;
+        }
+
+        .nav-arrow:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-indicators {
+            display: flex;
+            gap: 10px;
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background: var(--cream);
+            width: 28px;
+            border-radius: 4px;
+        }
+
+        /* ========================================
+           COMPONENTS - Stat Card
+        ======================================== */
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .stat-card-title {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
+        .stat-card-value {
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .stat-card-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* ========================================
+           COMPONENTS - Progress Bar
+        ======================================== */
+
+        .progress-item {
+            margin-bottom: 32px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .progress-label {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .progress-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 48px;
+            background: var(--bg-secondary);
+            border: 3px solid var(--cream);
+            border-radius: 80px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--moss-beige);
+            transition: width 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border-radius: 76px;
+        }
+
+        /* ========================================
+           COMPONENTS - Grid
+        ======================================== */
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* ========================================
+           COMPONENTS - Section Header
+        ======================================== */
+
+        .section-header {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* ========================================
+           UTILITIES
+        ======================================== */
+
+        .placeholder {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        .error {
+            background: rgba(88, 53, 33, 0.2);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 24px;
+            color: var(--text-primary);
+        }
+
+        .error-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div id="wild-oaks-app">
+        <header class="app-header">
+            <div class="header-title" id="pageTitle">Analytics</div>
+        </header>
+
+        <div class="pages-viewport">
+            <div class="pages-track" id="pagesTrack">
+
+                <!-- PAGE 1: ANALYTICS -->
+                <div class="page" data-page="0">
+                    <div class="page-content">
+                        <div class="section-header">
+                            <div class="section-title">Revenue Analytics</div>
+                            <div class="section-subtitle">Track your sales performance</div>
+                        </div>
+                        <div id="analyticsContent">
+                            <div class="grid grid-2">
+                                <div class="stat-card">
+                                    <div class="stat-card-header">
+                                        <div class="stat-card-title">Today</div>
+                                    </div>
+                                    <div class="stat-card-value" id="todayRevenue">$0.00</div>
+                                    <div class="stat-card-subtitle">vs. Yesterday: <span id="yesterdayRevenue">$0.00</span></div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-header">
+                                        <div class="stat-card-title">This Week</div>
+                                    </div>
+                                    <div class="stat-card-value" id="weekRevenue">$0.00</div>
+                                    <div class="stat-card-subtitle">7 days</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-header">
+                                        <div class="stat-card-title">This Month</div>
+                                    </div>
+                                    <div class="stat-card-value" id="monthRevenue">$0.00</div>
+                                    <div class="stat-card-subtitle">vs. Last Month: <span id="lastMonthRevenue">$0.00</span></div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-header">
+                                        <div class="stat-card-title">This Year</div>
+                                    </div>
+                                    <div class="stat-card-value" id="yearRevenue">$0.00</div>
+                                    <div class="stat-card-subtitle">vs. Last Year: <span id="lastYearRevenue">$0.00</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE 2: PRODUCTS -->
+                <div class="page" data-page="1">
+                    <div class="page-content">
+                        <div class="section-header">
+                            <div class="section-title">Top Products</div>
+                            <div class="section-subtitle">Best sellers this month</div>
+                        </div>
+                        <div id="productsContent">
+                            <div class="grid grid-2">
+                                <div class="stat-card">
+                                    <div class="stat-card-header">
+                                        <div class="stat-card-title">#1 Product Name</div>
+                                    </div>
+                                    <div class="stat-card-value">0</div>
+                                    <div class="stat-card-subtitle">units sold</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-header">
+                                        <div class="stat-card-title">#2 Product Name</div>
+                                    </div>
+                                    <div class="stat-card-value">0</div>
+                                    <div class="stat-card-subtitle">units sold</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-header">
+                                        <div class="stat-card-title">#3 Product Name</div>
+                                    </div>
+                                    <div class="stat-card-value">0</div>
+                                    <div class="stat-card-subtitle">units sold</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-header">
+                                        <div class="stat-card-title">#4 Product Name</div>
+                                    </div>
+                                    <div class="stat-card-value">0</div>
+                                    <div class="stat-card-subtitle">units sold</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE 3: SHIPPING -->
+                <div class="page" data-page="2">
+                    <div class="page-content">
+                        <div class="section-header">
+                            <div class="section-title">Shipping Progress</div>
+                            <div class="section-subtitle">Order fulfillment tracking</div>
+                        </div>
+                        <div id="shippingContent" class="loading">Loading shipping data...</div>
+                    </div>
+                </div>
+
+                <!-- PAGE 4: AFFILIATES -->
+                <div class="page" data-page="3">
+                    <div class="page-content">
+                        <div class="section-header">
+                            <div class="section-title">Affiliates</div>
+                            <div class="section-subtitle">Partner performance</div>
+                        </div>
+                        <div class="placeholder">Affiliates dashboard coming soon</div>
+                    </div>
+                </div>
+
+                <!-- PAGE 5: COMMISSION -->
+                <div class="page" data-page="4">
+                    <div class="page-content">
+                        <div class="section-header">
+                            <div class="section-title">Commission</div>
+                            <div class="section-subtitle">Earnings and payouts</div>
+                        </div>
+                        <div class="placeholder">Commission tracking coming soon</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="nav-container">
+            <div class="nav-arrows">
+                <button class="nav-arrow" id="prevBtn" aria-label="Previous">←</button>
+                <button class="nav-arrow" id="nextBtn" aria-label="Next">→</button>
+            </div>
+            <div class="page-indicators" id="indicators"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ========================================
+           WILD OAKS ANALYTICS APP
+           Modular, Professional Structure
+        ======================================== */
+
+        const WildOaksApp = {
+
+            // ========================================
+            // CONFIGURATION
+            // ========================================
+
+            config: {
+                colors: {
+                    mossBeige: '#9a8f6e',
+                    cinnamon: '#583521',
+                    olive: '#595137',
+                    tan: '#c9ac90',
+                    espresso: '#2e1f13',
+                    cream: '#e6ddcf'
+                },
+
+                endpoints: {
+                    shipping: 'https://raw.githubusercontent.com/wildoaksapothecaryadmin/squarespace-api-proxy/refs/heads/main/orders-summary.json',
+                    analytics: 'https://raw.githubusercontent.com/wildoaksapothecaryadmin/squarespace-api-proxy/refs/heads/main/analytics-summary.json',
+                    products: 'https://raw.githubusercontent.com/wildoaksapothecaryadmin/squarespace-api-proxy/refs/heads/main/products-summary.json'
+                },
+
+                pages: ['Analytics', 'Products', 'Shipping Progress', 'Affiliates', 'Commission'],
+                totalPages: 5,
+                refreshInterval: 15 * 60 * 1000 // 15 minutes
+            },
+
+            // ========================================
+            // STATE MANAGEMENT
+            // ========================================
+
+            state: {
+                currentPage: 0,
+                isTransitioning: false,
+                isDragging: false,
+                touchStartX: 0,
+                touchStartY: 0,
+                touchCurrentX: 0,
+                touchCurrentY: 0,
+
+                data: {
+                    shipping: null,
+                    analytics: null,
+                    products: null
+                },
+
+                loaded: {
+                    shipping: false,
+                    analytics: false,
+                    products: false
+                }
+            },
+
+            // ========================================
+            // REUSABLE COMPONENTS
+            // ========================================
+
+            components: {
+
+                statCard: (title, value, subtitle = '') => `
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">${title}</div>
+                        </div>
+                        <div class="stat-card-value">${value}</div>
+                        ${subtitle ? `<div class="stat-card-subtitle">${subtitle}</div>` : ''}
+                    </div>
+                `,
+
+                progressBar: (label, fulfilled, total) => {
+                    const percentage = total > 0 ? Math.round((fulfilled / total) * 100) : 0;
+                    return `
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <div class="progress-label">${label}</div>
+                                <div class="progress-value">${fulfilled}/${total} Orders Fulfilled</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    `;
+                },
+
+                error: (title, message) => `
+                    <div class="error">
+                        <div class="error-title">${title}</div>
+                        <div class="error-message">${message}</div>
+                    </div>
+                `
+            },
+
+            // ========================================
+            // DATA SERVICES
+            // ========================================
+
+            services: {
+
+                async fetchJSON(url) {
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        return await response.json();
+                    } catch (error) {
+                        console.error('Fetch error:', error);
+                        throw error;
+                    }
+                },
+
+                async loadShipping() {
+                    const data = await this.fetchJSON(WildOaksApp.config.endpoints.shipping);
+                    WildOaksApp.state.data.shipping = data;
+                    WildOaksApp.state.loaded.shipping = true;
+                    return data;
+                },
+
+                async loadAnalytics() {
+                    try {
+                        const data = await this.fetchJSON(WildOaksApp.config.endpoints.analytics);
+                        WildOaksApp.state.data.analytics = data;
+                        WildOaksApp.state.loaded.analytics = true;
+                        return data;
+                    } catch (error) {
+                        console.log('Analytics data not yet available, using placeholder');
+                        return null;
+                    }
+                },
+
+                async loadProducts() {
+                    try {
+                        const data = await this.fetchJSON(WildOaksApp.config.endpoints.products);
+                        WildOaksApp.state.data.products = data;
+                        WildOaksApp.state.loaded.products = true;
+                        return data;
+                    } catch (error) {
+                        console.log('Products data not yet available, using placeholder');
+                        return null;
+                    }
+                }
+            },
+
+            // ========================================
+            // UI RENDERING
+            // ========================================
+
+            ui: {
+
+                renderShipping() {
+                    const content = document.getElementById('shippingContent');
+                    const data = WildOaksApp.state.data.shipping;
+
+                    if (!data || !data.summary) {
+                        content.innerHTML = WildOaksApp.components.error(
+                            'Data Error',
+                            'Unable to load shipping data'
+                        );
+                        return;
+                    }
+
+                    const { today, thisWeek, thisMonth } = data.summary;
+
+                    content.innerHTML = `
+                        ${WildOaksApp.components.progressBar('Today', today.fulfilled, today.total)}
+                        ${WildOaksApp.components.progressBar('This Week', thisWeek.fulfilled, thisWeek.total)}
+                        ${WildOaksApp.components.progressBar('This Month', thisMonth.fulfilled, thisMonth.total)}
+                    `;
+                },
+
+                renderAnalytics() {
+                    const data = WildOaksApp.state.data.analytics;
+
+                    if (!data || !data.revenue) {
+                        console.log('No analytics data available yet');
+                        return;
+                    }
+
+                    // Update all revenue values
+                    document.getElementById('todayRevenue').textContent = this.formatCurrency(data.revenue.today);
+                    document.getElementById('yesterdayRevenue').textContent = this.formatCurrency(data.revenue.yesterday);
+                    document.getElementById('weekRevenue').textContent = this.formatCurrency(data.revenue.thisWeek);
+                    document.getElementById('monthRevenue').textContent = this.formatCurrency(data.revenue.thisMonth);
+                    document.getElementById('lastMonthRevenue').textContent = this.formatCurrency(data.revenue.lastMonth);
+                    document.getElementById('yearRevenue').textContent = this.formatCurrency(data.revenue.thisYear);
+                    document.getElementById('lastYearRevenue').textContent = this.formatCurrency(data.revenue.lastYear);
+                },
+
+                renderProducts() {
+                    const data = WildOaksApp.state.data.products;
+
+                    if (!data || !data.topProducts || data.topProducts.length === 0) {
+                        console.log('No products data available yet');
+                        return;
+                    }
+
+                    const content = document.getElementById('productsContent');
+                    const cards = data.topProducts.slice(0, 4).map((product, index) => `
+                        <div class="stat-card">
+                            <div class="stat-card-header">
+                                <div class="stat-card-title">#${index + 1} ${product.name}</div>
+                            </div>
+                            <div class="stat-card-value">${product.quantity}</div>
+                            <div class="stat-card-subtitle">units sold • ${this.formatCurrency(product.revenue)}</div>
+                        </div>
+                    `).join('');
+
+                    content.innerHTML = `<div class="grid grid-2">${cards}</div>`;
+                },
+
+                formatCurrency(amount) {
+                    if (typeof amount !== 'number') return '$0.00';
+                    return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                }
+            },
+
+            // ========================================
+            // NAVIGATION
+            // ========================================
+
+            navigation: {
+
+                init() {
+                    const track = document.getElementById('pagesTrack');
+                    const viewport = document.querySelector('.pages-viewport');
+                    const prevBtn = document.getElementById('prevBtn');
+                    const nextBtn = document.getElementById('nextBtn');
+
+                    // Create indicators
+                    const indicators = document.getElementById('indicators');
+                    for (let i = 0; i < WildOaksApp.config.totalPages; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = 'indicator';
+                        dot.dataset.page = i;
+                        dot.addEventListener('click', () => this.goToPage(i));
+                        indicators.appendChild(dot);
+                    }
+
+                    // Button navigation
+                    prevBtn.addEventListener('click', () => this.goToPage(WildOaksApp.state.currentPage - 1));
+                    nextBtn.addEventListener('click', () => this.goToPage(WildOaksApp.state.currentPage + 1));
+
+                    // Touch navigation
+                    viewport.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+                    viewport.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+                    viewport.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
+
+                    // Window resize
+                    window.addEventListener('resize', () => this.goToPage(WildOaksApp.state.currentPage));
+                },
+
+                goToPage(pageIndex) {
+                    if (pageIndex < 0 || pageIndex >= WildOaksApp.config.totalPages) {
+                        return;
+                    }
+
+                    WildOaksApp.state.isTransitioning = true;
+                    WildOaksApp.state.currentPage = pageIndex;
+
+                    const track = document.getElementById('pagesTrack');
+                    const offset = -(pageIndex * window.innerWidth);
+                    track.style.transform = `translateX(${offset}px)`;
+
+                    // Update UI
+                    document.getElementById('pageTitle').textContent = WildOaksApp.config.pages[pageIndex];
+                    this.updateIndicators();
+                    this.updateButtons();
+
+                    // Load page data
+                    this.loadPageData(pageIndex);
+
+                    setTimeout(() => {
+                        WildOaksApp.state.isTransitioning = false;
+                    }, 350);
+                },
+
+                updateIndicators() {
+                    document.querySelectorAll('.indicator').forEach((dot, index) => {
+                        dot.classList.toggle('active', index === WildOaksApp.state.currentPage);
+                    });
+                },
+
+                updateButtons() {
+                    const prevBtn = document.getElementById('prevBtn');
+                    const nextBtn = document.getElementById('nextBtn');
+                    prevBtn.disabled = WildOaksApp.state.currentPage === 0;
+                    nextBtn.disabled = WildOaksApp.state.currentPage === WildOaksApp.config.totalPages - 1;
+                },
+
+                loadPageData(pageIndex) {
+                    // Page 0: Analytics
+                    if (pageIndex === 0 && !WildOaksApp.state.loaded.analytics) {
+                        WildOaksApp.services.loadAnalytics()
+                            .then(() => WildOaksApp.ui.renderAnalytics())
+                            .catch(error => {
+                                console.log('Analytics not loaded:', error);
+                            });
+                    }
+
+                    // Page 1: Products
+                    if (pageIndex === 1 && !WildOaksApp.state.loaded.products) {
+                        WildOaksApp.services.loadProducts()
+                            .then(() => WildOaksApp.ui.renderProducts())
+                            .catch(error => {
+                                console.log('Products not loaded:', error);
+                            });
+                    }
+
+                    // Page 2: Shipping
+                    if (pageIndex === 2 && !WildOaksApp.state.loaded.shipping) {
+                        WildOaksApp.services.loadShipping()
+                            .then(() => WildOaksApp.ui.renderShipping())
+                            .catch(error => {
+                                document.getElementById('shippingContent').innerHTML =
+                                    WildOaksApp.components.error('Loading Error', error.message);
+                            });
+                    }
+                },
+
+                handleTouchStart(e) {
+                    if (WildOaksApp.state.isTransitioning) return;
+
+                    WildOaksApp.state.touchStartX = e.touches[0].clientX;
+                    WildOaksApp.state.touchStartY = e.touches[0].clientY;
+                    WildOaksApp.state.isDragging = true;
+
+                    document.getElementById('pagesTrack').classList.add('no-transition');
+                },
+
+                handleTouchMove(e) {
+                    if (!WildOaksApp.state.isDragging || WildOaksApp.state.isTransitioning) return;
+
+                    WildOaksApp.state.touchCurrentX = e.touches[0].clientX;
+                    WildOaksApp.state.touchCurrentY = e.touches[0].clientY;
+
+                    const diffX = WildOaksApp.state.touchCurrentX - WildOaksApp.state.touchStartX;
+                    const diffY = WildOaksApp.state.touchCurrentY - WildOaksApp.state.touchStartY;
+
+                    // Only handle horizontal swipes
+                    if (Math.abs(diffX) > Math.abs(diffY)) {
+                        e.preventDefault();
+
+                        const track = document.getElementById('pagesTrack');
+                        const currentOffset = -(WildOaksApp.state.currentPage * window.innerWidth);
+                        const newOffset = currentOffset + diffX;
+                        track.style.transform = `translateX(${newOffset}px)`;
+                    }
+                },
+
+                handleTouchEnd(e) {
+                    if (!WildOaksApp.state.isDragging) return;
+
+                    WildOaksApp.state.isDragging = false;
+                    document.getElementById('pagesTrack').classList.remove('no-transition');
+
+                    const diffX = WildOaksApp.state.touchCurrentX - WildOaksApp.state.touchStartX;
+                    const diffY = WildOaksApp.state.touchCurrentY - WildOaksApp.state.touchStartY;
+
+                    // Only handle as page swipe if horizontal dominates
+                    if (Math.abs(diffX) > Math.abs(diffY)) {
+                        const threshold = window.innerWidth * 0.25;
+
+                        if (Math.abs(diffX) > threshold) {
+                            if (diffX > 0) {
+                                this.goToPage(WildOaksApp.state.currentPage - 1);
+                            } else {
+                                this.goToPage(WildOaksApp.state.currentPage + 1);
+                            }
+                        } else {
+                            this.goToPage(WildOaksApp.state.currentPage);
+                        }
+                    } else {
+                        this.goToPage(WildOaksApp.state.currentPage);
+                    }
+
+                    WildOaksApp.state.touchCurrentX = 0;
+                    WildOaksApp.state.touchCurrentY = 0;
+                }
+            },
+
+            // ========================================
+            // INITIALIZATION
+            // ========================================
+
+            init() {
+                console.log('🌲 Wild Oaks Analytics initialized');
+                this.navigation.init();
+                this.navigation.goToPage(0);
+            }
+        };
+
+        // Start the app
+        WildOaksApp.init();
+    </script>
+</body>
+</html>
