@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://use.typekit.net/qjo3rmq.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            font-family: 'cooper-black-std', serif;
+            background: #000 !important;
+            color: #fff;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+        }
+
+        body.light-mode {
+            background: #e6ddcf !important;
+            color: #583521;
+        }
+
+        /* Force black background everywhere */
+        html, body, #page, .sqs-block-code, .code-block, main, section, article {
+            background-color: #000 !important;
+        }
+
+        body.light-mode html,
+        body.light-mode body,
+        body.light-mode #page,
+        body.light-mode .sqs-block-code,
+        body.light-mode .code-block,
+        body.light-mode main,
+        body.light-mode section,
+        body.light-mode article {
+            background-color: #e6ddcf !important;
+        }
+
+        /* Main container */
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+            position: relative;
+        }
+
+        body.light-mode .app-container {
+            background: #e6ddcf;
+        }
+
+        /* Header */
+        .app-header {
+            flex-shrink: 0;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        body.light-mode .theme-toggle {
+            border-color: #583521;
+        }
+
+        /* Pages viewport */
+        .pages-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .pages-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        .page {
+            min-width: 100vw;
+            width: 100vw;
+            height: 100%;
+            flex-shrink: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .page-content {
+            padding: 20px 30px 100px 30px;
+            min-height: 100%;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .nav-arrows {
+            display: none;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .nav-arrows {
+                display: flex;
+            }
+        }
+
+        .nav-arrow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        body.light-mode .nav-arrow {
+            background: rgba(88, 53, 33, 0.2);
+            color: #583521;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        body.light-mode .nav-arrow:hover {
+            background: rgba(88, 53, 33, 0.4);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-indicators {
+            display: flex;
+            gap: 10px;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        body.light-mode .indicator {
+            background: rgba(88, 53, 33, 0.3);
+        }
+
+        .indicator.active {
+            background: #fff;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        body.light-mode .indicator.active {
+            background: #583521;
+        }
+
+        /* Content blocks */
+        .content-block {
+            background: transparent;
+            padding: 30px 0;
+        }
+
+        .block-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .data-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .data-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .data-label {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .data-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        /* Shipping styles */
+        .shipping-block {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .shipping-item {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .shipping-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .shipping-period {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .shipping-status {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 50px;
+            border: 4px solid #fff;
+            border-radius: 80px;
+            overflow: hidden;
+            background: transparent;
+            position: relative;
+        }
+
+        body.light-mode .progress-bar {
+            border-color: #583521;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #00ff00;
+            transition: width 0.5s ease-out;
+            border-radius: 76px;
+        }
+
+        /* Placeholder content */
+        .placeholder {
+            text-align: center;
+            padding: 80px 20px;
+            opacity: 0.5;
+            font-size: 24px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-title" id="pageTitle">Analytics</div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        </header>
+
+        <div class="pages-viewport">
+            <div class="pages-track" id="pagesTrack">
+                <!-- Page 1: Analytics -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="placeholder">Analytics Page<br>(Connect Google Sheets)</div>
+                    </div>
+                </div>
+
+                <!-- Page 2: Products -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="placeholder">Products Page<br>(Connect Google Sheets)</div>
+                    </div>
+                </div>
+
+                <!-- Page 3: Shipping Progress -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="content-block">
+                            <div id="shippingContent" class="loading">Loading shipping data...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page 4: Affiliates -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="placeholder">Affiliates<br>Coming Soon</div>
+                    </div>
+                </div>
+
+                <!-- Page 5: Commission -->
+                <div class="page">
+                    <div class="page-content">
+                        <div class="placeholder">Commission<br>Coming Soon</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-container">
+            <div class="nav-arrows">
+                <button class="nav-arrow" id="prevBtn" aria-label="Previous page">←</button>
+                <button class="nav-arrow" id="nextBtn" aria-label="Next page">→</button>
+            </div>
+            <div class="page-indicators" id="indicators"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const GITHUB_ORDERS_URL = 'https://raw.githubusercontent.com/wildoaksapothecaryadmin/squarespace-api-proxy/refs/heads/main/orders-summary.json';
+
+        // State
+        const state = {
+            currentPage: 0,
+            totalPages: 5,
+            isTransitioning: false,
+            touchStartX: 0,
+            touchCurrentX: 0,
+            isDragging: false
+        };
+
+        const pageNames = ['Analytics', 'Products', 'Shipping Progress', 'Affiliates', 'Commission'];
+
+        // Elements
+        const track = document.getElementById('pagesTrack');
+        const indicators = document.getElementById('indicators');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageTitle = document.getElementById('pageTitle');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Initialize
+        function init() {
+            createIndicators();
+            setupTheme();
+            setupNavigation();
+            setupTouch();
+            goToPage(0);
+            loadShippingData();
+        }
+
+        // Create page indicators
+        function createIndicators() {
+            for (let i = 0; i < state.totalPages; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'indicator';
+                dot.dataset.page = i;
+                dot.addEventListener('click', () => goToPage(i));
+                indicators.appendChild(dot);
+            }
+        }
+
+        // Theme toggle
+        function setupTheme() {
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                themeToggle.textContent = document.body.classList.contains('light-mode') ? '☀' : '🌙';
+            });
+        }
+
+        // Navigation
+        function setupNavigation() {
+            prevBtn.addEventListener('click', () => goToPage(state.currentPage - 1));
+            nextBtn.addEventListener('click', () => goToPage(state.currentPage + 1));
+        }
+
+        // Touch/Swipe
+        function setupTouch() {
+            track.addEventListener('touchstart', handleTouchStart, { passive: true });
+            track.addEventListener('touchmove', handleTouchMove, { passive: false });
+            track.addEventListener('touchend', handleTouchEnd, { passive: true });
+        }
+
+        function handleTouchStart(e) {
+            if (state.isTransitioning) return;
+            state.touchStartX = e.touches[0].clientX;
+            state.isDragging = true;
+            track.style.transition = 'none';
+        }
+
+        function handleTouchMove(e) {
+            if (!state.isDragging || state.isTransitioning) return;
+
+            e.preventDefault(); // Prevent scroll
+            state.touchCurrentX = e.touches[0].clientX;
+            const diff = state.touchCurrentX - state.touchStartX;
+            const currentOffset = -(state.currentPage * window.innerWidth);
+            const newOffset = currentOffset + diff;
+
+            track.style.transform = `translateX(${newOffset}px)`;
+        }
+
+        function handleTouchEnd(e) {
+            if (!state.isDragging) return;
+            state.isDragging = false;
+
+            const diff = state.touchCurrentX - state.touchStartX;
+            const threshold = window.innerWidth * 0.2; // 20% swipe threshold
+
+            track.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0 && state.currentPage > 0) {
+                    goToPage(state.currentPage - 1);
+                } else if (diff < 0 && state.currentPage < state.totalPages - 1) {
+                    goToPage(state.currentPage + 1);
+                } else {
+                    goToPage(state.currentPage);
+                }
+            } else {
+                goToPage(state.currentPage);
+            }
+
+            state.touchCurrentX = 0;
+        }
+
+        // Go to page
+        function goToPage(pageIndex) {
+            if (pageIndex < 0 || pageIndex >= state.totalPages) {
+                pageIndex = state.currentPage;
+            }
+
+            state.isTransitioning = true;
+            state.currentPage = pageIndex;
+
+            // Update transform
+            const offset = -(pageIndex * window.innerWidth);
+            track.style.transform = `translateX(${offset}px)`;
+
+            // Update UI
+            pageTitle.textContent = pageNames[pageIndex];
+            updateIndicators();
+            updateButtons();
+
+            // Load shipping data when navigating to page 3
+            if (pageIndex === 2 && !window.shippingDataLoaded) {
+                loadShippingData();
+            }
+
+            setTimeout(() => {
+                state.isTransitioning = false;
+            }, 300);
+        }
+
+        function updateIndicators() {
+            document.querySelectorAll('.indicator').forEach((dot, index) => {
+                dot.classList.toggle('active', index === state.currentPage);
+            });
+        }
+
+        function updateButtons() {
+            prevBtn.disabled = state.currentPage === 0;
+            nextBtn.disabled = state.currentPage === state.totalPages - 1;
+        }
+
+        // Load shipping data
+        window.shippingDataLoaded = false;
+
+        async function loadShippingData() {
+            const content = document.getElementById('shippingContent');
+
+            try {
+                console.log('Loading shipping data from:', GITHUB_ORDERS_URL);
+
+                const response = await fetch(GITHUB_ORDERS_URL);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Loaded summary data:', data);
+
+                if (!data.summary) {
+                    throw new Error('Invalid data structure');
+                }
+
+                const today = data.summary.today || { total: 0, fulfilled: 0, percentage: 0 };
+                const week = data.summary.thisWeek || { total: 0, fulfilled: 0, percentage: 0 };
+                const month = data.summary.thisMonth || { total: 0, fulfilled: 0, percentage: 0 };
+
+                content.innerHTML = `
+                    <div class="shipping-block">
+                        <div class="shipping-item">
+                            <div class="shipping-header">
+                                <div class="shipping-period">Today</div>
+                                <div class="shipping-status">${today.fulfilled}/${today.total} Orders Fulfilled</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${today.percentage}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="shipping-item">
+                            <div class="shipping-header">
+                                <div class="shipping-period">This Week</div>
+                                <div class="shipping-status">${week.fulfilled}/${week.total} Orders Fulfilled</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${week.percentage}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="shipping-item">
+                            <div class="shipping-header">
+                                <div class="shipping-period">This Month</div>
+                                <div class="shipping-status">${month.fulfilled}/${month.total} Orders Fulfilled</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${month.percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                console.log('Shipping data displayed successfully');
+                window.shippingDataLoaded = true;
+
+                // Auto-refresh every 15 minutes
+                setTimeout(() => {
+                    window.shippingDataLoaded = false;
+                    if (state.currentPage === 2) {
+                        loadShippingData();
+                    }
+                }, 15 * 60 * 1000);
+
+            } catch (error) {
+                console.error('Error loading shipping data:', error);
+                content.innerHTML = `
+                    <div class="loading">
+                        <div style="margin-bottom: 20px;">Error loading shipping data</div>
+                        <div style="font-size: 16px; opacity: 0.7; margin-top: 10px;">${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            goToPage(state.currentPage);
+        });
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
