@@ -26,7 +26,7 @@ jobs:
             echo "Fetching page $PAGE..."
 
             RESPONSE=$(curl -s -w "\n%{http_code}" \
-              "https://api.squarespace.com/1.0/commerce/orders?modifiedAfter=$SINCE_DATE&modifiedBefore=$BEFORE_DATE&page=$PAGE&per_page=50" \
+              "https://api.squarespace.com/1.0/commerce/orders?createdAfter=$SINCE_DATE&createdBefore=$BEFORE_DATE&page=$PAGE&per_page=50" \
               -H "Authorization: Bearer ${{ secrets.SQUARESPACE_API_KEY }}" \
               -H "User-Agent: WildOaksAnalytics/1.0")
 
