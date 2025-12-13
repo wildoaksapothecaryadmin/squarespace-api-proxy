@@ -1,0 +1,335 @@
+name: Analytics Data Sync
+
+on:
+  schedule:
+    # Run every hour to update recent orders
+    - cron: '0 * * * *'
+    # Run weekly on Sundays at 3 AM to archive old orders
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      force_full_sync:
+        description: 'Force a full sync of all orders'
+        required: false
+        default: 'false'
+
+jobs:
+  sync-analytics-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up data files
+        run: |
+          # Create data files if they don't exist
+          if [ ! -f "orders-recent.json" ]; then
+            echo '{"orders":[],"lastUpdated":"","dataRange":{"start":"","end":""}}' > orders-recent.json
+          fi
+
+          if [ ! -f "orders-historical.json" ]; then
+            echo '{"orders":[],"lastUpdated":"","dataRange":{"start":"","end":""}}' > orders-historical.json
+          fi
+
+      - name: Fetch recent orders (past 90 days)
+        env:
+          SQUARESPACE_API_KEY: ${{ secrets.SQUARESPACE_API_KEY_ANALYTICS }}
+        run: |
+          echo "========================================="
+          echo "FETCHING RECENT ORDERS (Past 90 Days)"
+          echo "========================================="
+
+          # Calculate date range
+          NINETY_DAYS_AGO=$(date -u -d '90 days ago' +"%Y-%m-%dT%H:%M:%SZ")
+          CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          echo "Date range: $NINETY_DAYS_AGO to $CURRENT_TIME"
+
+          # Initialize
+          ALL_ORDERS='[]'
+          CURSOR=""
+          PAGE=1
+
+          while true; do
+            echo ""
+            echo "Fetching page $PAGE..."
+
+            # Build URL with cursor if available
+            if [ -z "$CURSOR" ]; then
+              URL="https://api.squarespace.com/1.0/commerce/orders?createdAfter=$NINETY_DAYS_AGO&createdBefore=$CURRENT_TIME"
+            else
+              URL="https://api.squarespace.com/1.0/commerce/orders?createdAfter=$NINETY_DAYS_AGO&createdBefore=$CURRENT_TIME&cursor=$CURSOR"
+            fi
+
+            # Make API request
+            RESPONSE=$(curl -s -w "\n%{http_code}" -H "Authorization: Bearer $SQUARESPACE_API_KEY" "$URL")
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+
+            echo "HTTP Status: $HTTP_CODE"
+
+            if [ "$HTTP_CODE" != "200" ]; then
+              echo "API request failed with status $HTTP_CODE"
+              echo "$BODY"
+              exit 1
+            fi
+
+            # Extract orders from this page
+            PAGE_ORDERS=$(echo "$BODY" | jq -r '.result.orders')
+            ORDER_COUNT=$(echo "$PAGE_ORDERS" | jq 'length')
+            echo "Received $ORDER_COUNT orders on this page"
+
+            # Merge with all orders
+            ALL_ORDERS=$(echo "$ALL_ORDERS" "$PAGE_ORDERS" | jq -s '.[0] + .[1]')
+
+            # Check for next page
+            HAS_NEXT=$(echo "$BODY" | jq -r '.pagination.hasNextPage // false')
+
+            if [ "$HAS_NEXT" = "true" ]; then
+              CURSOR=$(echo "$BODY" | jq -r '.pagination.nextPageCursor')
+              echo "Has next page, cursor: ${CURSOR:0:20}..."
+              PAGE=$((PAGE + 1))
+            else
+              echo "No more pages"
+              break
+            fi
+          done
+
+          TOTAL_ORDERS=$(echo "$ALL_ORDERS" | jq 'length')
+          echo ""
+          echo "========================================="
+          echo "TOTAL RECENT ORDERS FETCHED: $TOTAL_ORDERS"
+          echo "========================================="
+
+          # Create recent orders JSON
+          jq -n \
+            --argjson orders "$ALL_ORDERS" \
+            --arg updated "$CURRENT_TIME" \
+            --arg start "$NINETY_DAYS_AGO" \
+            --arg end "$CURRENT_TIME" \
+            '{
+              orders: $orders,
+              lastUpdated: $updated,
+              dataRange: {
+                start: $start,
+                end: $end
+              }
+            }' > orders-recent.json
+
+          echo "Saved to orders-recent.json"
+
+      - name: Archive old orders (weekly only)
+        if: github.event.schedule == '0 3 * * 0' || github.event.inputs.force_full_sync == 'true'
+        env:
+          SQUARESPACE_API_KEY: ${{ secrets.SQUARESPACE_API_KEY_ANALYTICS }}
+        run: |
+          echo "========================================="
+          echo "ARCHIVING OLD ORDERS (Weekly Task)"
+          echo "========================================="
+
+          # Calculate cutoff date (91+ days ago)
+          NINETY_ONE_DAYS_AGO=$(date -u -d '91 days ago' +"%Y-%m-%dT%H:%M:%SZ")
+          NINETY_DAYS_AGO=$(date -u -d '90 days ago' +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Load existing historical data
+          EXISTING_HISTORICAL=$(cat orders-historical.json | jq -r '.orders')
+          EXISTING_COUNT=$(echo "$EXISTING_HISTORICAL" | jq 'length')
+          echo "Existing historical orders: $EXISTING_COUNT"
+
+          # Fetch orders from 91 days ago to 90 days ago (the gap)
+          echo "Fetching orders from $NINETY_ONE_DAYS_AGO to $NINETY_DAYS_AGO"
+
+          ALL_ARCHIVE_ORDERS='[]'
+          CURSOR=""
+          PAGE=1
+
+          while true; do
+            echo "Fetching archive page $PAGE..."
+
+            if [ -z "$CURSOR" ]; then
+              URL="https://api.squarespace.com/1.0/commerce/orders?createdAfter=$NINETY_ONE_DAYS_AGO&createdBefore=$NINETY_DAYS_AGO"
+            else
+              URL="https://api.squarespace.com/1.0/commerce/orders?createdAfter=$NINETY_ONE_DAYS_AGO&createdBefore=$NINETY_DAYS_AGO&cursor=$CURSOR"
+            fi
+
+            RESPONSE=$(curl -s -w "\n%{http_code}" -H "Authorization: Bearer $SQUARESPACE_API_KEY" "$URL")
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+
+            if [ "$HTTP_CODE" != "200" ]; then
+              echo "Archive API request failed with status $HTTP_CODE"
+              echo "$BODY"
+              break
+            fi
+
+            PAGE_ORDERS=$(echo "$BODY" | jq -r '.result.orders')
+            ORDER_COUNT=$(echo "$PAGE_ORDERS" | jq 'length')
+            echo "Received $ORDER_COUNT orders to archive"
+
+            ALL_ARCHIVE_ORDERS=$(echo "$ALL_ARCHIVE_ORDERS" "$PAGE_ORDERS" | jq -s '.[0] + .[1]')
+
+            HAS_NEXT=$(echo "$BODY" | jq -r '.pagination.hasNextPage // false')
+            if [ "$HAS_NEXT" = "true" ]; then
+              CURSOR=$(echo "$BODY" | jq -r '.pagination.nextPageCursor')
+              PAGE=$((PAGE + 1))
+            else
+              break
+            fi
+          done
+
+          NEW_ARCHIVE_COUNT=$(echo "$ALL_ARCHIVE_ORDERS" | jq 'length')
+          echo "New orders to archive: $NEW_ARCHIVE_COUNT"
+
+          # Merge new archive orders with existing historical
+          MERGED_HISTORICAL=$(echo "$EXISTING_HISTORICAL" "$ALL_ARCHIVE_ORDERS" | jq -s '.[0] + .[1] | unique_by(.id)')
+          MERGED_COUNT=$(echo "$MERGED_HISTORICAL" | jq 'length')
+
+          echo "Total historical orders after merge: $MERGED_COUNT"
+
+          # Save updated historical data
+          CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          jq -n \
+            --argjson orders "$MERGED_HISTORICAL" \
+            --arg updated "$CURRENT_TIME" \
+            '{
+              orders: $orders,
+              lastUpdated: $updated,
+              dataRange: {
+                start: "2020-01-01T00:00:00Z",
+                end: "'"$NINETY_DAYS_AGO"'"
+              }
+            }' > orders-historical.json
+
+          echo "Historical data updated"
+
+      - name: Calculate analytics summary
+        run: |
+          echo "========================================="
+          echo "CALCULATING ANALYTICS"
+          echo "========================================="
+
+          # Load both recent and historical data
+          RECENT_ORDERS=$(cat orders-recent.json | jq -r '.orders')
+          HISTORICAL_ORDERS=$(cat orders-historical.json | jq -r '.orders')
+
+          # Merge for full dataset
+          ALL_ORDERS=$(echo "$RECENT_ORDERS" "$HISTORICAL_ORDERS" | jq -s '.[0] + .[1]')
+          TOTAL_COUNT=$(echo "$ALL_ORDERS" | jq 'length')
+
+          echo "Total orders in dataset: $TOTAL_COUNT"
+
+          # Current time for calculations
+          CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Calculate date boundaries
+          TODAY_START=$(date -u +"%Y-%m-%d")T00:00:00Z
+          TODAY_END=$(date -u +"%Y-%m-%d")T23:59:59Z
+
+          YESTERDAY_START=$(date -u -d '1 day ago' +"%Y-%m-%d")T00:00:00Z
+          YESTERDAY_END=$(date -u -d '1 day ago' +"%Y-%m-%d")T23:59:59Z
+
+          WEEK_START=$(date -u -d '7 days ago' +"%Y-%m-%d")T00:00:00Z
+
+          MONTH_START=$(date -u +"%Y-%m-01")T00:00:00Z
+          LAST_MONTH_START=$(date -u -d 'last month' +"%Y-%m-01")T00:00:00Z
+          LAST_MONTH_END=$(date -u -d "$(date +%Y-%m-01) -1 day" +"%Y-%m-%d")T23:59:59Z
+
+          YEAR_START=$(date -u +"%Y-01-01")T00:00:00Z
+          LAST_YEAR_START=$(date -u -d 'last year' +"%Y-01-01")T00:00:00Z
+          LAST_YEAR_END=$(date -u -d "$(date +%Y-01-01) -1 day" +"%Y-%m-%d")T23:59:59Z
+
+          # Special case for December 2025 (include Nov 29-30)
+          CURRENT_YEAR=$(date -u +"%Y")
+          CURRENT_MONTH=$(date -u +"%m")
+
+          if [ "$CURRENT_YEAR" = "2025" ] && [ "$CURRENT_MONTH" = "12" ]; then
+            MONTH_START="2025-11-29T00:00:00Z"
+            echo "Using special December 2025 start date: Nov 29"
+          fi
+
+          echo "Date ranges:"
+          echo "  Today: $TODAY_START to $TODAY_END"
+          echo "  This Week: $WEEK_START to now"
+          echo "  This Month: $MONTH_START to now"
+          echo "  This Year: $YEAR_START to now"
+
+          # Calculate revenue using jq
+          cat > /tmp/calc_revenue.jq << 'EOFCALC'
+          def parseDate:
+            try (. | fromdateiso8601) catch 0;
+
+          def inRange($start; $end):
+            . as $date |
+            ($date | parseDate) as $ts |
+            ($start | parseDate) as $startTs |
+            ($end | parseDate) as $endTs |
+            ($ts >= $startTs and $ts <= $endTs);
+
+          # Calculate revenue for a date range
+          def calcRevenue($start; $end):
+            map(
+              select(.createdOn | inRange($start; $end)) |
+              .grandTotal.value
+            ) | add // 0;
+
+          {
+            today: calcRevenue($todayStart; $todayEnd),
+            yesterday: calcRevenue($yesterdayStart; $yesterdayEnd),
+            thisWeek: calcRevenue($weekStart; $currentTime),
+            thisMonth: calcRevenue($monthStart; $currentTime),
+            lastMonth: calcRevenue($lastMonthStart; $lastMonthEnd),
+            thisYear: calcRevenue($yearStart; $currentTime),
+            lastYear: calcRevenue($lastYearStart; $lastYearEnd)
+          }
+          EOFCALC
+
+          REVENUE=$(echo "$ALL_ORDERS" | jq \
+            --arg todayStart "$TODAY_START" \
+            --arg todayEnd "$TODAY_END" \
+            --arg yesterdayStart "$YESTERDAY_START" \
+            --arg yesterdayEnd "$YESTERDAY_END" \
+            --arg weekStart "$WEEK_START" \
+            --arg monthStart "$MONTH_START" \
+            --arg lastMonthStart "$LAST_MONTH_START" \
+            --arg lastMonthEnd "$LAST_MONTH_END" \
+            --arg yearStart "$YEAR_START" \
+            --arg lastYearStart "$LAST_YEAR_START" \
+            --arg lastYearEnd "$LAST_YEAR_END" \
+            --arg currentTime "$CURRENT_TIME" \
+            -f /tmp/calc_revenue.jq)
+
+          echo ""
+          echo "Revenue calculated:"
+          echo "$REVENUE" | jq .
+
+          # Create analytics summary
+          jq -n \
+            --argjson revenue "$REVENUE" \
+            --arg updated "$CURRENT_TIME" \
+            '{
+              lastUpdated: $updated,
+              revenue: $revenue
+            }' > analytics-summary.json
+
+          echo ""
+          echo "Analytics summary saved to analytics-summary.json"
+          cat analytics-summary.json | jq .
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+          git add orders-recent.json orders-historical.json analytics-summary.json
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update analytics data - $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            git push
+            echo "Changes pushed successfully"
+          fi
