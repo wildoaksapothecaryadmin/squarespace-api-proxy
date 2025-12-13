@@ -35,6 +35,92 @@ jobs:
             echo '{"orders":[],"lastUpdated":"","dataRange":{"start":"","end":""}}' > orders-historical.json
           fi
 
+      - name: Initial historical fetch (first run only)
+        env:
+          SQUARESPACE_API_KEY: ${{ secrets.SQUARESPACE_API_KEY_ANALYTICS }}
+        run: |
+          # Check if historical data is empty
+          HISTORICAL_COUNT=$(cat orders-historical.json | jq '.orders | length')
+
+          if [ "$HISTORICAL_COUNT" -eq 0 ]; then
+            echo "========================================="
+            echo "INITIAL HISTORICAL DATA FETCH"
+            echo "Fetching ALL orders older than 90 days"
+            echo "========================================="
+
+            NINETY_DAYS_AGO=$(date -u -d '90 days ago' +"%Y-%m-%dT%H:%M:%SZ")
+
+            # Fetch all orders from beginning of time to 90 days ago
+            # Using a very old start date to ensure we get everything
+            START_DATE="2020-01-01T00:00:00Z"
+
+            echo "Fetching orders from $START_DATE to $NINETY_DAYS_AGO"
+
+            ALL_HISTORICAL='[]'
+            CURSOR=""
+            PAGE=1
+
+            while true; do
+              echo "Fetching historical page $PAGE..."
+
+              if [ -z "$CURSOR" ]; then
+                URL="https://api.squarespace.com/1.0/commerce/orders?createdAfter=$START_DATE&createdBefore=$NINETY_DAYS_AGO"
+              else
+                URL="https://api.squarespace.com/1.0/commerce/orders?createdAfter=$START_DATE&createdBefore=$NINETY_DAYS_AGO&cursor=$CURSOR"
+              fi
+
+              RESPONSE=$(curl -s -w "\n%{http_code}" -H "Authorization: Bearer $SQUARESPACE_API_KEY" "$URL")
+              HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+              BODY=$(echo "$RESPONSE" | sed '$d')
+
+              if [ "$HTTP_CODE" != "200" ]; then
+                echo "Historical fetch failed with status $HTTP_CODE"
+                echo "$BODY"
+                break
+              fi
+
+              PAGE_ORDERS=$(echo "$BODY" | jq -r '.result.orders')
+              ORDER_COUNT=$(echo "$PAGE_ORDERS" | jq 'length')
+              echo "Received $ORDER_COUNT historical orders"
+
+              ALL_HISTORICAL=$(echo "$ALL_HISTORICAL" "$PAGE_ORDERS" | jq -s '.[0] + .[1]')
+
+              HAS_NEXT=$(echo "$BODY" | jq -r '.pagination.hasNextPage // false')
+              if [ "$HAS_NEXT" = "true" ]; then
+                CURSOR=$(echo "$BODY" | jq -r '.pagination.nextPageCursor')
+                PAGE=$((PAGE + 1))
+              else
+                break
+              fi
+            done
+
+            TOTAL_HISTORICAL=$(echo "$ALL_HISTORICAL" | jq 'length')
+            echo ""
+            echo "========================================="
+            echo "TOTAL HISTORICAL ORDERS: $TOTAL_HISTORICAL"
+            echo "========================================="
+
+            # Save historical data
+            CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            jq -n \
+              --argjson orders "$ALL_HISTORICAL" \
+              --arg updated "$CURRENT_TIME" \
+              --arg start "$START_DATE" \
+              --arg end "$NINETY_DAYS_AGO" \
+              '{
+                orders: $orders,
+                lastUpdated: $updated,
+                dataRange: {
+                  start: $start,
+                  end: $end
+                }
+              }' > orders-historical.json
+
+            echo "Historical data saved!"
+          else
+            echo "Historical data already exists ($HISTORICAL_COUNT orders), skipping initial fetch"
+          fi
+
       - name: Fetch recent orders (past 90 days)
         env:
           SQUARESPACE_API_KEY: ${{ secrets.SQUARESPACE_API_KEY_ANALYTICS }}
