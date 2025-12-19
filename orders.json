@@ -1,26 +1,26 @@
 {
-  "lastUpdated": "2025-12-19T23:31:29Z",
+  "lastUpdated": "2025-12-19T23:47:21Z",
   "orders": [
     {
-      "orderNumber": "15866",
-      "createdOn": "2025-12-19T21:39:48.818Z",
-      "modifiedOn": "2025-12-19T21:39:51.217Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "corrinamdelgado@gmail.com"
+      "orderNumber": "15864",
+      "createdOn": "2025-12-19T19:23:11.994Z",
+      "modifiedOn": "2025-12-19T23:38:07.675Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "mckayla.besel7@gmail.com"
     },
     {
       "orderNumber": "15865",
       "createdOn": "2025-12-19T20:15:40.880Z",
-      "modifiedOn": "2025-12-19T20:15:44.196Z",
-      "fulfillmentStatus": "PENDING",
+      "modifiedOn": "2025-12-19T23:36:07.240Z",
+      "fulfillmentStatus": "FULFILLED",
       "customerEmail": "snowpearl66@gmail.com"
     },
     {
-      "orderNumber": "15864",
-      "createdOn": "2025-12-19T19:23:11.994Z",
-      "modifiedOn": "2025-12-19T19:23:13.868Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "mckayla.besel7@gmail.com"
+      "orderNumber": "15866",
+      "createdOn": "2025-12-19T21:39:48.818Z",
+      "modifiedOn": "2025-12-19T23:34:06.942Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "corrinamdelgado@gmail.com"
     },
     {
       "orderNumber": "15863",
