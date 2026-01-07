@@ -1,6 +1,13 @@
 {
-  "lastUpdated": "2026-01-07T21:33:48Z",
+  "lastUpdated": "2026-01-07T21:51:07Z",
   "orders": [
+    {
+      "orderNumber": "16006",
+      "createdOn": "2026-01-05T23:37:17.480Z",
+      "modifiedOn": "2026-01-07T21:39:41.414Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "jordynrue@ymail.com"
+    },
     {
       "orderNumber": "16024",
       "createdOn": "2026-01-07T21:20:14.430Z",
@@ -434,13 +441,6 @@
       "modifiedOn": "2026-01-06T00:57:43.421Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "sabrinaburnett22@gmail.com"
-    },
-    {
-      "orderNumber": "16006",
-      "createdOn": "2026-01-05T23:37:17.480Z",
-      "modifiedOn": "2026-01-05T23:37:20.289Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "jordynrue@ymail.com"
     },
     {
       "orderNumber": "15955",
