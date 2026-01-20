@@ -1,6 +1,13 @@
 {
-  "lastUpdated": "2026-01-20T06:02:53Z",
+  "lastUpdated": "2026-01-20T06:56:36Z",
   "orders": [
+    {
+      "orderNumber": "16069",
+      "createdOn": "2026-01-15T04:26:00.632Z",
+      "modifiedOn": "2026-01-20T06:46:25.078Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "parkergoddard@gmail.com"
+    },
     {
       "orderNumber": "15524",
       "createdOn": "2025-11-29T16:59:20.340Z",
@@ -231,13 +238,6 @@
       "modifiedOn": "2026-01-15T19:52:31.271Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "btivers@gmail.com"
-    },
-    {
-      "orderNumber": "16069",
-      "createdOn": "2026-01-15T04:26:00.632Z",
-      "modifiedOn": "2026-01-15T04:26:02.252Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "parkergoddard@gmail.com"
     },
     {
       "orderNumber": "15339",
