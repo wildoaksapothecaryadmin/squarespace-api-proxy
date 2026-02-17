@@ -1,6 +1,27 @@
 {
-  "lastUpdated": "2026-02-17T19:41:17Z",
+  "lastUpdated": "2026-02-17T20:23:37Z",
   "orders": [
+    {
+      "orderNumber": "16348",
+      "createdOn": "2026-02-13T01:47:55.696Z",
+      "modifiedOn": "2026-02-17T20:11:50.778Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "outdoorsman5202@gmail.com"
+    },
+    {
+      "orderNumber": "16347",
+      "createdOn": "2026-02-12T19:52:30.634Z",
+      "modifiedOn": "2026-02-17T19:43:45.996Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "mreeg2@gmail.com"
+    },
+    {
+      "orderNumber": "16346",
+      "createdOn": "2026-02-12T19:03:43.261Z",
+      "modifiedOn": "2026-02-17T19:39:45.440Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "aubrecht@att.net"
+    },
     {
       "orderNumber": "16345",
       "createdOn": "2026-02-12T17:33:18.386Z",
@@ -366,13 +387,6 @@
       "customerEmail": "larissa.fryer@gmail.com"
     },
     {
-      "orderNumber": "16348",
-      "createdOn": "2026-02-13T01:47:55.696Z",
-      "modifiedOn": "2026-02-13T01:47:57.832Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "outdoorsman5202@gmail.com"
-    },
-    {
       "orderNumber": "16304",
       "createdOn": "2026-02-08T03:24:54.081Z",
       "modifiedOn": "2026-02-13T01:09:43.674Z",
@@ -427,20 +441,6 @@
       "modifiedOn": "2026-02-12T23:43:21.980Z",
       "fulfillmentStatus": "FULFILLED",
       "customerEmail": "sadiepeachey@hotmail.com"
-    },
-    {
-      "orderNumber": "16347",
-      "createdOn": "2026-02-12T19:52:30.634Z",
-      "modifiedOn": "2026-02-12T19:52:32.557Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "mreeg2@gmail.com"
-    },
-    {
-      "orderNumber": "16346",
-      "createdOn": "2026-02-12T19:03:43.261Z",
-      "modifiedOn": "2026-02-12T19:03:46.291Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "aubrecht@att.net"
     },
     {
       "orderNumber": "16326",
