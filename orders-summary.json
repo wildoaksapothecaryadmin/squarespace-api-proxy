@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-23T06:20:44Z",
+  "lastUpdated": "2026-02-23T07:42:17Z",
   "summary": {
     "today": {
       "total": 4,
@@ -15,9 +15,9 @@
     },
     "thisMonth": {
       "total": 255,
-      "fulfilled": 173,
-      "pending": 77,
-      "percentage": 68
+      "fulfilled": 182,
+      "pending": 68,
+      "percentage": 71
     }
   }
 }
