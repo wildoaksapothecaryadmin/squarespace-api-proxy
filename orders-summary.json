@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-01T05:52:09Z",
+  "lastUpdated": "2026-04-01T07:46:33Z",
   "summary": {
     "today": {
       "total": 1,
@@ -9,9 +9,9 @@
     },
     "thisWeek": {
       "total": 25,
-      "fulfilled": 0,
-      "pending": 24,
-      "percentage": 0
+      "fulfilled": 4,
+      "pending": 20,
+      "percentage": 16
     },
     "thisMonth": {
       "total": 1,
