@@ -1,23 +1,23 @@
 {
-  "lastUpdated": "2026-04-04T23:51:55Z",
+  "lastUpdated": "2026-04-05T03:20:19Z",
   "summary": {
     "today": {
-      "total": 6,
+      "total": 2,
       "fulfilled": 0,
-      "pending": 6,
+      "pending": 2,
       "percentage": 0
     },
     "thisWeek": {
-      "total": 68,
+      "total": 70,
       "fulfilled": 54,
-      "pending": 12,
-      "percentage": 79
+      "pending": 14,
+      "percentage": 77
     },
     "thisMonth": {
-      "total": 44,
+      "total": 46,
       "fulfilled": 31,
-      "pending": 12,
-      "percentage": 70
+      "pending": 14,
+      "percentage": 67
     }
   }
 }
