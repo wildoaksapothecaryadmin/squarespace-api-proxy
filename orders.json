@@ -1,6 +1,13 @@
 {
-  "lastUpdated": "2026-06-05T19:25:02Z",
+  "lastUpdated": "2026-06-05T21:12:46Z",
   "orders": [
+    {
+      "orderNumber": "17352",
+      "createdOn": "2026-06-05T20:47:46.654Z",
+      "modifiedOn": "2026-06-05T20:47:48.760Z",
+      "fulfillmentStatus": "PENDING",
+      "customerEmail": "jlark221@aol.com"
+    },
     {
       "orderNumber": "17206",
       "createdOn": "2026-05-19T05:58:45.575Z",
@@ -34993,13 +35000,6 @@
       "modifiedOn": "2025-03-07T19:53:56.901Z",
       "fulfillmentStatus": "FULFILLED",
       "customerEmail": "ruthann3954@gmail.com"
-    },
-    {
-      "orderNumber": "12374",
-      "createdOn": "2025-03-07T15:23:45.540Z",
-      "modifiedOn": "2025-03-07T19:49:56.232Z",
-      "fulfillmentStatus": "FULFILLED",
-      "customerEmail": "lindsey.smalltownsalon@gmail.com"
     }
   ]
 }
