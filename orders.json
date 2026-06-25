@@ -1,6 +1,20 @@
 {
-  "lastUpdated": "2026-06-25T17:35:47Z",
+  "lastUpdated": "2026-06-25T19:34:35Z",
   "orders": [
+    {
+      "orderNumber": "17423",
+      "createdOn": "2026-06-24T20:09:07.846Z",
+      "modifiedOn": "2026-06-25T17:42:31.985Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "emmyweavs@gmail.com"
+    },
+    {
+      "orderNumber": "17422",
+      "createdOn": "2026-06-24T18:48:08.752Z",
+      "modifiedOn": "2026-06-25T17:36:31.098Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "sojournerstogether@gmail.com"
+    },
     {
       "orderNumber": "17410",
       "createdOn": "2026-06-24T04:05:47.709Z",
@@ -65,13 +79,6 @@
       "customerEmail": "emilyhorine20@gmail.com"
     },
     {
-      "orderNumber": "17423",
-      "createdOn": "2026-06-24T20:09:07.846Z",
-      "modifiedOn": "2026-06-24T20:09:09.655Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "emmyweavs@gmail.com"
-    },
-    {
       "orderNumber": "17406",
       "createdOn": "2026-06-23T15:51:17.352Z",
       "modifiedOn": "2026-06-24T19:39:45.865Z",
@@ -105,13 +112,6 @@
       "modifiedOn": "2026-06-24T19:27:44.406Z",
       "fulfillmentStatus": "FULFILLED",
       "customerEmail": "mccartymichelle@yahoo.com"
-    },
-    {
-      "orderNumber": "17422",
-      "createdOn": "2026-06-24T18:48:08.752Z",
-      "modifiedOn": "2026-06-24T18:48:11.544Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "sojournerstogether@gmail.com"
     },
     {
       "orderNumber": "17421",
