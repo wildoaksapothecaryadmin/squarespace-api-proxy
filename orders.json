@@ -1,6 +1,20 @@
 {
-  "lastUpdated": "2026-07-10T18:29:20Z",
+  "lastUpdated": "2026-07-10T20:03:53Z",
   "orders": [
+    {
+      "orderNumber": "17508",
+      "createdOn": "2026-07-09T02:48:32.925Z",
+      "modifiedOn": "2026-07-10T19:43:35.164Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "neljoymor@hotmail.com"
+    },
+    {
+      "orderNumber": "17506",
+      "createdOn": "2026-07-08T22:09:07.519Z",
+      "modifiedOn": "2026-07-10T19:39:34.192Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "lukin.vlad.valea@gmail.com"
+    },
     {
       "orderNumber": "17512",
       "createdOn": "2026-07-10T16:22:15.044Z",
@@ -30,25 +44,11 @@
       "customerEmail": "jewelz.2000@icloud.com"
     },
     {
-      "orderNumber": "17508",
-      "createdOn": "2026-07-09T02:48:32.925Z",
-      "modifiedOn": "2026-07-09T02:48:35.885Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "neljoymor@hotmail.com"
-    },
-    {
       "orderNumber": "17507",
       "createdOn": "2026-07-08T22:13:38.888Z",
       "modifiedOn": "2026-07-08T22:13:40.777Z",
       "fulfillmentStatus": "FULFILLED",
       "customerEmail": "jwebb8810@gmail.com"
-    },
-    {
-      "orderNumber": "17506",
-      "createdOn": "2026-07-08T22:09:07.519Z",
-      "modifiedOn": "2026-07-08T22:09:09.321Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "lukin.vlad.valea@gmail.com"
     },
     {
       "orderNumber": "17505",
