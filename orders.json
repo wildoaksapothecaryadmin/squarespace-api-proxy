@@ -1,6 +1,20 @@
 {
-  "lastUpdated": "2026-07-17T21:05:31Z",
+  "lastUpdated": "2026-07-17T22:11:31Z",
   "orders": [
+    {
+      "orderNumber": "17530",
+      "createdOn": "2026-07-16T20:40:08.373Z",
+      "modifiedOn": "2026-07-17T21:16:42.346Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "jessedgar03@yahoo.com"
+    },
+    {
+      "orderNumber": "17528",
+      "createdOn": "2026-07-16T14:35:03.301Z",
+      "modifiedOn": "2026-07-17T21:12:41.392Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "jordansc76@yahoo.com"
+    },
     {
       "orderNumber": "17527",
       "createdOn": "2026-07-16T13:32:43.985Z",
@@ -121,13 +135,6 @@
       "customerEmail": "marymichelehawkins@gmail.com"
     },
     {
-      "orderNumber": "17530",
-      "createdOn": "2026-07-16T20:40:08.373Z",
-      "modifiedOn": "2026-07-16T20:40:10.458Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "jessedgar03@yahoo.com"
-    },
-    {
       "orderNumber": "17529",
       "createdOn": "2026-07-16T17:46:36.544Z",
       "modifiedOn": "2026-07-16T17:46:39.316Z",
@@ -147,13 +154,6 @@
       "modifiedOn": "2026-07-16T17:36:55.502Z",
       "fulfillmentStatus": "FULFILLED",
       "customerEmail": "morgan@mydearweddings.com"
-    },
-    {
-      "orderNumber": "17528",
-      "createdOn": "2026-07-16T14:35:03.301Z",
-      "modifiedOn": "2026-07-16T14:35:05.059Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "jordansc76@yahoo.com"
     },
     {
       "orderNumber": "17515",
