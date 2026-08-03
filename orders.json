@@ -1,6 +1,20 @@
 {
-  "lastUpdated": "2026-08-03T21:37:43Z",
+  "lastUpdated": "2026-08-03T22:46:30Z",
   "orders": [
+    {
+      "orderNumber": "17582",
+      "createdOn": "2026-08-01T15:00:40.626Z",
+      "modifiedOn": "2026-08-03T22:29:11.917Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "elizabetzie9@gmail.com"
+    },
+    {
+      "orderNumber": "17580",
+      "createdOn": "2026-08-01T15:00:36.832Z",
+      "modifiedOn": "2026-08-03T21:51:07.570Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "rmshomper@gmail.com"
+    },
     {
       "orderNumber": "17807",
       "createdOn": "2026-08-03T21:00:31.355Z",
@@ -1689,25 +1703,11 @@
       "customerEmail": "ednastoltz@gmail.com"
     },
     {
-      "orderNumber": "17582",
-      "createdOn": "2026-08-01T15:00:40.626Z",
-      "modifiedOn": "2026-08-01T15:00:42.551Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "elizabetzie9@gmail.com"
-    },
-    {
       "orderNumber": "17581",
       "createdOn": "2026-08-01T15:00:39.065Z",
       "modifiedOn": "2026-08-01T15:00:40.715Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "powerinhisblood@gmail.com"
-    },
-    {
-      "orderNumber": "17580",
-      "createdOn": "2026-08-01T15:00:36.832Z",
-      "modifiedOn": "2026-08-01T15:00:39.020Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "rmshomper@gmail.com"
     },
     {
       "orderNumber": "17578",
