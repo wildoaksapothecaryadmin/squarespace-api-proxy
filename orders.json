@@ -1,6 +1,13 @@
 {
-  "lastUpdated": "2026-08-04T13:21:26Z",
+  "lastUpdated": "2026-08-04T16:00:48Z",
   "orders": [
+    {
+      "orderNumber": "17584",
+      "createdOn": "2026-08-01T15:00:46.860Z",
+      "modifiedOn": "2026-08-04T14:32:54.876Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "jordynrue@ymail.com"
+    },
     {
       "orderNumber": "17813",
       "createdOn": "2026-08-04T12:51:28.537Z",
@@ -1729,13 +1736,6 @@
       "modifiedOn": "2026-08-01T15:00:51.922Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "vintagegal24@sbcglobal.net"
-    },
-    {
-      "orderNumber": "17584",
-      "createdOn": "2026-08-01T15:00:46.860Z",
-      "modifiedOn": "2026-08-01T15:00:50.221Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "jordynrue@ymail.com"
     },
     {
       "orderNumber": "17583",
