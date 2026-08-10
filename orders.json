@@ -1,6 +1,13 @@
 {
-  "lastUpdated": "2026-08-10T17:13:55Z",
+  "lastUpdated": "2026-08-10T18:09:13Z",
   "orders": [
+    {
+      "orderNumber": "17763",
+      "createdOn": "2026-08-02T11:15:15.328Z",
+      "modifiedOn": "2026-08-10T17:40:48.387Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "rexncilla@gmail.com"
+    },
     {
       "orderNumber": "17891",
       "createdOn": "2026-08-10T14:56:15.910Z",
@@ -1533,13 +1540,6 @@
       "modifiedOn": "2026-08-02T11:24:52.645Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "troyerann8891@gmail.com"
-    },
-    {
-      "orderNumber": "17763",
-      "createdOn": "2026-08-02T11:15:15.328Z",
-      "modifiedOn": "2026-08-02T11:15:17.591Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "rexncilla@gmail.com"
     },
     {
       "orderNumber": "17762",
