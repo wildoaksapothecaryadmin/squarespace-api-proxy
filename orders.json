@@ -1,6 +1,20 @@
 {
-  "lastUpdated": "2026-08-19T17:45:36Z",
+  "lastUpdated": "2026-08-19T18:05:28Z",
   "orders": [
+    {
+      "orderNumber": "17825",
+      "createdOn": "2026-08-05T02:12:19.526Z",
+      "modifiedOn": "2026-08-19T17:53:45.158Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "kendra.t.nicole@gmail.com"
+    },
+    {
+      "orderNumber": "17824",
+      "createdOn": "2026-08-05T00:59:24.817Z",
+      "modifiedOn": "2026-08-19T17:45:43.674Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "hannahjoys98@gmail.com"
+    },
     {
       "orderNumber": "17822",
       "createdOn": "2026-08-04T20:52:45.513Z",
@@ -2646,20 +2660,6 @@
       "modifiedOn": "2026-08-05T02:41:52.617Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "stoltzlynn97@icloud.com"
-    },
-    {
-      "orderNumber": "17825",
-      "createdOn": "2026-08-05T02:12:19.526Z",
-      "modifiedOn": "2026-08-05T02:12:21.737Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "kendra.t.nicole@gmail.com"
-    },
-    {
-      "orderNumber": "17824",
-      "createdOn": "2026-08-05T00:59:24.817Z",
-      "modifiedOn": "2026-08-05T00:59:26.976Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "hannahjoys98@gmail.com"
     },
     {
       "orderNumber": "17823",
