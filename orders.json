@@ -1,6 +1,20 @@
 {
-  "lastUpdated": "2026-08-20T16:58:11Z",
+  "lastUpdated": "2026-08-20T17:42:48Z",
   "orders": [
+    {
+      "orderNumber": "17823",
+      "createdOn": "2026-08-05T00:06:59.650Z",
+      "modifiedOn": "2026-08-20T17:26:02.047Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "jktxny@gmail.com"
+    },
+    {
+      "orderNumber": "17821",
+      "createdOn": "2026-08-04T20:38:21.434Z",
+      "modifiedOn": "2026-08-20T16:53:56.931Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "leeking0959@gmail.com"
+    },
     {
       "orderNumber": "17975",
       "createdOn": "2026-08-20T15:55:36.727Z",
@@ -2753,13 +2767,6 @@
       "customerEmail": "santimateo7@gmail.com"
     },
     {
-      "orderNumber": "17823",
-      "createdOn": "2026-08-05T00:06:59.650Z",
-      "modifiedOn": "2026-08-05T00:07:02.036Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "jktxny@gmail.com"
-    },
-    {
       "orderNumber": "17613",
       "createdOn": "2026-08-01T15:03:37.744Z",
       "modifiedOn": "2026-08-04T23:30:01.009Z",
@@ -2800,13 +2807,6 @@
       "modifiedOn": "2026-08-04T22:05:42.667Z",
       "fulfillmentStatus": "FULFILLED",
       "customerEmail": "tiffanyaurorachristie@gmail.com"
-    },
-    {
-      "orderNumber": "17821",
-      "createdOn": "2026-08-04T20:38:21.434Z",
-      "modifiedOn": "2026-08-04T20:38:23.539Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "leeking0959@gmail.com"
     },
     {
       "orderNumber": "17584",
