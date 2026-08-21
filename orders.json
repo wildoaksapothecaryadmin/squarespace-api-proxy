@@ -1,6 +1,20 @@
 {
-  "lastUpdated": "2026-08-21T21:06:26Z",
+  "lastUpdated": "2026-08-21T21:45:36Z",
   "orders": [
+    {
+      "orderNumber": "17880",
+      "createdOn": "2026-08-09T19:36:23.137Z",
+      "modifiedOn": "2026-08-21T21:40:23.496Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "traine3@gmail.com"
+    },
+    {
+      "orderNumber": "17879",
+      "createdOn": "2026-08-09T19:06:04.242Z",
+      "modifiedOn": "2026-08-21T21:32:22.464Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "whollyformed@gmail.com"
+    },
     {
       "orderNumber": "17878",
       "createdOn": "2026-08-09T19:00:56.002Z",
@@ -2331,20 +2345,6 @@
       "modifiedOn": "2026-08-09T21:27:21.812Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "mdorricott86@gmail.com"
-    },
-    {
-      "orderNumber": "17880",
-      "createdOn": "2026-08-09T19:36:23.137Z",
-      "modifiedOn": "2026-08-09T19:36:25.679Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "traine3@gmail.com"
-    },
-    {
-      "orderNumber": "17879",
-      "createdOn": "2026-08-09T19:06:04.242Z",
-      "modifiedOn": "2026-08-09T19:06:05.964Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "whollyformed@gmail.com"
     },
     {
       "orderNumber": "17870",
