@@ -1,6 +1,13 @@
 {
-  "lastUpdated": "2026-08-21T17:37:23Z",
+  "lastUpdated": "2026-08-21T18:08:23Z",
   "orders": [
+    {
+      "orderNumber": "17867",
+      "createdOn": "2026-08-08T21:27:11.318Z",
+      "modifiedOn": "2026-08-21T17:37:57.376Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "jacquelinedueck@gmail.com"
+    },
     {
       "orderNumber": "17862",
       "createdOn": "2026-08-07T21:17:07.981Z",
@@ -2331,13 +2338,6 @@
       "modifiedOn": "2026-08-09T00:13:30.566Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "isabellej41@gmail.com"
-    },
-    {
-      "orderNumber": "17867",
-      "createdOn": "2026-08-08T21:27:11.318Z",
-      "modifiedOn": "2026-08-08T21:27:14.413Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "jacquelinedueck@gmail.com"
     },
     {
       "orderNumber": "17866",
