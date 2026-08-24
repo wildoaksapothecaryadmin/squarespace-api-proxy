@@ -1,6 +1,13 @@
 {
-  "lastUpdated": "2026-08-24T13:35:17Z",
+  "lastUpdated": "2026-08-24T14:30:24Z",
   "orders": [
+    {
+      "orderNumber": "17910",
+      "createdOn": "2026-08-14T00:39:06.756Z",
+      "modifiedOn": "2026-08-24T13:59:27.101Z",
+      "fulfillmentStatus": "FULFILLED",
+      "customerEmail": "bargaincenter24@yahoo.com"
+    },
     {
       "orderNumber": "17991",
       "createdOn": "2026-08-24T05:33:57.221Z",
@@ -1617,13 +1624,6 @@
       "modifiedOn": "2026-08-14T13:53:51.717Z",
       "fulfillmentStatus": "PENDING",
       "customerEmail": "sararosemartin21@gmail.com"
-    },
-    {
-      "orderNumber": "17910",
-      "createdOn": "2026-08-14T00:39:06.756Z",
-      "modifiedOn": "2026-08-14T00:39:08.764Z",
-      "fulfillmentStatus": "PENDING",
-      "customerEmail": "bargaincenter24@yahoo.com"
     },
     {
       "orderNumber": "17740",
